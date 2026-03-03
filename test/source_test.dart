@@ -24,6 +24,9 @@
  */
 
 import 'package:flutter_flavorizr/src/exception/configuration_not_found_exception.dart';
+import 'package:flutter_flavorizr/src/exception/missing_required_fields_exception.dart';
+import 'package:flutter_flavorizr/src/exception/null_fields_exception.dart';
+import 'package:flutter_flavorizr/src/parser/models/flavorizr.dart';
 import 'package:flutter_flavorizr/src/parser/parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -42,18 +45,51 @@ void main() {
     expect(parser, isNotNull);
   });
 
+  test('Test OHOS flavors loaded from pubspec', () {
+    const parser = Parser(
+      pubspecPath: 'test_resources/pubspec',
+      flavorizrPath: 'test_resources/non_existent',
+    );
+
+    final flavorizr = parser.parse();
+
+    expect(flavorizr.ohosFlavorsAvailable, isTrue);
+    expect(flavorizr.ohosFlavors.keys, containsAll(['apple', 'banana']));
+    expect(
+      flavorizr.ohosFlavors['apple']?.ohos?.applicationId,
+      equals('com.example.apple.ohos'),
+    );
+  });
+
   test('Test Flavorizr loaded from flavorizr', () {
     const parser = Parser(
       pubspecPath: 'test_resources/non_existent',
       flavorizrPath: 'test_resources/flavorizr',
     );
     try {
-      parser.parse();
+      Flavorizr flavorizr = parser.parse();
+      print("flavorizr:$flavorizr");
     } catch (e) {
       fail(e.toString());
     }
 
     expect(parser, isNotNull);
+  });
+
+  test('Test OHOS flavors loaded from flavorizr', () {
+    const parser = Parser(
+      pubspecPath: 'test_resources/non_existent',
+      flavorizrPath: 'test_resources/flavorizr',
+    );
+
+    final flavorizr = parser.parse();
+
+    expect(flavorizr.ohosFlavorsAvailable, isTrue);
+    expect(flavorizr.ohosFlavors.keys, containsAll(['apple', 'banana']));
+    expect(
+      flavorizr.ohosFlavors['banana']?.ohos?.applicationId,
+      equals('com.example.banana.ohos'),
+    );
   });
 
   test('Test Flavorizr fails to load configuration', () {
@@ -67,5 +103,56 @@ void main() {
     } catch (e) {
       expect(e, isA<ConfigurationNotFoundException>());
     }
+  });
+
+  test('Test Flavorizr success', () {
+    const parser = Parser(
+      pubspecPath: 'example/non_existent',
+      flavorizrPath: 'example/flavorizr',
+    );
+
+    try {
+      Flavorizr flavorizr = parser.parse();
+      print("flavorizr:$flavorizr");
+    } catch (e) {
+      fail(e.toString());
+    }
+    expect(parser, isNotNull);
+  });
+
+  test('Test Flavorizr OHOS missing required applicationId', () {
+    const parser = Parser(
+      pubspecPath: 'test_resources/non_existent',
+      flavorizrPath: 'test_resources/ohos/flavorizr_missing_application_id',
+    );
+
+    expect(
+      parser.parse,
+      throwsA(isA<MissingRequiredFieldsException>()),
+    );
+  });
+
+  test('Test Flavorizr OHOS null value', () {
+    const parser = Parser(
+      pubspecPath: 'test_resources/non_existent',
+      flavorizrPath: 'test_resources/ohos/flavorizr_null_ohos',
+    );
+
+    expect(
+      parser.parse,
+      throwsA(isA<NullFieldsException>()),
+    );
+  });
+
+  test('Test Flavorizr OHOS invalid customConfig type', () {
+    const parser = Parser(
+      pubspecPath: 'test_resources/non_existent',
+      flavorizrPath: 'test_resources/ohos/flavorizr_invalid_custom_config',
+    );
+
+    expect(
+      parser.parse,
+      throwsA(isA<TypeError>()),
+    );
   });
 }

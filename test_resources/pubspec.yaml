@@ -33,6 +33,8 @@ flavorizr:
 
       android:
         applicationId: "com.example.apple"
+      ohos:
+        applicationId: "com.example.apple.ohos"
 
       ios:
         bundleId: "com.example.apple"
@@ -68,6 +70,8 @@ flavorizr:
             value: "20.0"
       ios:
         bundleId: "com.example.banana"
+      ohos:
+        applicationId: "com.example.banana.ohos"
 
 
 # For information on the generic Dart part of this file, see the

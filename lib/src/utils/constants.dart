@@ -109,6 +109,30 @@ class K {
 
   static String macOSFirebaseScriptPath = '$macOSPath/firebaseScript.sh';
 
+  static String ohosPath = 'ohos';
+
+  static String ohosFlavorizrPath = '$ohosPath/flavorizr.json';
+
+  static String ohosBuildProfile5Path = '$ohosPath/build-profile5.json5';
+
+  static String ohosBuildProfilePath = '$ohosPath/build-profile.json5';
+
+  static String appBuildProfile5Path = 'build-profile5.json5';
+
+  static String appBuildProfilePath = 'build-profile.json5';
+
+  static String appScopePath = 'AppScope/app.json5';
+
+  static String entryModulePath = 'entry/src/main/module.json5';
+
+  static String ohosProductsPath = '$ohosPath/build-profile.generated.json5';
+
+  static String ohosEntryPath = '$ohosPath/entry';
+
+  static String ohosResourcesPath = '$ohosEntryPath/src/main/resources';
+
+  static String ohosMediaPath = '$ohosResourcesPath/base/media';
+
   static String assetsZipPath = 'assets.tmp.zip';
 
   static String tempPath = '.tmp';

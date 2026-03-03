@@ -23,6 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import 'dart:convert';
+
 import 'package:checked_yaml/checked_yaml.dart';
 import 'package:flutter_flavorizr/src/extensions/extensions_map.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -62,6 +64,9 @@ class Flavorizr {
   late Map<String, Flavor> macosFlavors;
 
   @JsonKey(includeFromJson: false)
+  late Map<String, Flavor> ohosFlavors;
+
+  @JsonKey(includeFromJson: false)
   late Map<String, Flavor> androidFirebaseFlavors;
 
   @JsonKey(includeFromJson: false)
@@ -82,6 +87,7 @@ class Flavorizr {
   })  : androidFlavors = flavors.where((_, flavor) => flavor.android != null),
         iosFlavors = flavors.where((_, flavor) => flavor.ios != null),
         macosFlavors = flavors.where((_, flavor) => flavor.macos != null),
+        ohosFlavors = flavors.where((_, flavor) => flavor.ohos != null),
         androidFirebaseFlavors = flavors.where(
           (_, flavor) => flavor.android?.firebase != null,
         ),
@@ -97,14 +103,18 @@ class Flavorizr {
 
   factory Flavorizr.fromJson(Map json) => _$FlavorizrFromJson(json);
 
-  factory Flavorizr.parse(String yaml) =>
-      checkedYamlDecode(yaml, (o) => Flavorizr.fromJson(o ?? {}));
+  factory Flavorizr.parse(String yaml) => checkedYamlDecode(yaml, (o) {
+        print("Flavorizr.parse:${jsonEncode(o)}");
+        return Flavorizr.fromJson(o ?? {});
+      });
 
   bool get androidFlavorsAvailable => androidFlavors.isNotEmpty;
 
   bool get iosFlavorsAvailable => iosFlavors.isNotEmpty;
 
   bool get macosFlavorsAvailable => macosFlavors.isNotEmpty;
+
+  bool get ohosFlavorsAvailable => ohosFlavors.isNotEmpty;
 
   bool get androidFirebaseFlavorsAvailable => androidFirebaseFlavors.isNotEmpty;
 

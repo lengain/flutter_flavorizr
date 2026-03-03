@@ -61,6 +61,9 @@ import 'package:flutter_flavorizr/src/processors/macos/dummy_assets/macos_dummy_
 import 'package:flutter_flavorizr/src/processors/macos/icons/macos_icons_processor.dart';
 import 'package:flutter_flavorizr/src/processors/macos/macos_plist_processor.dart';
 import 'package:flutter_flavorizr/src/processors/macos/xcconfig/macos_xcconfig_targets_file_processor.dart';
+import 'package:flutter_flavorizr/src/processors/ohos/config/ohos_config_target_file_processor.dart';
+import 'package:flutter_flavorizr/src/processors/ohos/icons/ohos_icons_processor.dart';
+import 'package:flutter_flavorizr/src/processors/ohos/products/ohos_products_target_file_processor.dart';
 import 'package:flutter_flavorizr/src/utils/constants.dart';
 import 'package:mason_logger/mason_logger.dart';
 
@@ -106,6 +109,11 @@ class Processor extends AbstractProcessor<void> {
     'macos:icons',
     'macos:plist',
 
+    // OHOS
+    'ohos:config',
+    'ohos:products',
+    'ohos:icons',
+
     // Google
     'google:firebase',
 
@@ -127,13 +135,23 @@ class Processor extends AbstractProcessor<void> {
 
   @override
   void execute() async {
-    final instructions = List.from(config.instructions ?? defaultInstructionSet)
+    final instructions = List<String>.from(
+      config.instructions ?? defaultInstructionSet,
+    )
       ..removeWhere((instruction) =>
           !config.androidFlavorsAvailable && instruction.startsWith('android'))
       ..removeWhere((instruction) =>
           !config.iosFlavorsAvailable && instruction.startsWith('ios'))
       ..removeWhere((instruction) =>
-          !config.macosFlavorsAvailable && instruction.startsWith('macos'));
+          !config.macosFlavorsAvailable && instruction.startsWith('macos'))
+      ..removeWhere((instruction) =>
+          !config.ohosFlavorsAvailable && instruction.startsWith('ohos'));
+
+    if (instructions.contains('ohos:products') &&
+        !instructions.contains('ohos:config')) {
+      final productsIndex = instructions.indexOf('ohos:products');
+      instructions.insert(productsIndex, 'ohos:config');
+    }
 
     logger.info('Flavorization process started');
 
@@ -411,6 +429,20 @@ class Processor extends AbstractProcessor<void> {
               config: flavorizr,
               logger: logger,
             ),
+            config: flavorizr,
+            logger: logger,
+          ),
+
+      // OHOS
+      'ohos:config': () => OhosConfigTargetFileProcessor(
+            config: flavorizr,
+            logger: logger,
+          ),
+      'ohos:products': () => OhosProductsTargetFileProcessor(
+            config: flavorizr,
+            logger: logger,
+          ),
+      'ohos:icons': () => OhosIconsProcessor(
             config: flavorizr,
             logger: logger,
           ),

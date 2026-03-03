@@ -1,4 +1,7 @@
 ## NEXT
+* Added OHOS parser support (`flavor.ohos`, `ohosFlavors`, and generated serializers)
+* Added OHOS processors: `ohos:config`, `ohos:products`, `ohos:icons`
+* Added OHOS tests, example configuration updates, and README documentation for new fields and instructions
 
 ## 2.4.1
 * Fixed profile build configuration

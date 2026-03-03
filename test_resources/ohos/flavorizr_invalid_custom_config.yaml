@@ -1,0 +1,8 @@
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      customConfig:
+        - invalid

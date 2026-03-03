@@ -1,0 +1,7 @@
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      customConfig:
+        productName: "apple_debug"

@@ -50,7 +50,7 @@ Once all of the prerequisites have been installed and you have added flutter_fla
 
 ### Example
 
-Create a new file named flavorizr.yaml and define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*.
+Create a new file named flavorizr.yaml and define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*. If you want to generate HarmonyOS assets too, add the `ohos` section with its `applicationId`.
 
 ```yaml
 flavors:
@@ -64,6 +64,8 @@ flavors:
       bundleId: "com.example.apple"
     macos:
       bundleId: "com.example.apple"  
+    ohos:
+      applicationId: "com.example.apple.ohos"
   banana:
     app:
       name: "Banana App"
@@ -74,10 +76,12 @@ flavors:
       bundleId: "com.example.banana"
     macos:
       bundleId: "com.example.banana"
+    ohos:
+      applicationId: "com.example.banana.ohos"
 ```
 
 Alternatively, add a new key named flavorizr and define a sub item named *flavors*. 
-Under the flavors array you can define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*.
+Under the flavors array you can define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*. Optionally, you can also define an `ohos` section with an OHOS-specific `applicationId`.
 This way of defining flavors will be deprecated in versions 3.x
 
 ```yaml
@@ -92,7 +96,9 @@ flavorizr:
       ios:
         bundleId: "com.example.apple"
       macos:
-        bundleId: "com.example.apple"        
+        bundleId: "com.example.apple"
+      ohos:
+        applicationId: "com.example.apple.ohos"
     banana:
       app:
         name: "Banana App"
@@ -103,6 +109,8 @@ flavorizr:
         bundleId: "com.example.banana"
       macos:
         bundleId: "com.example.banana"
+      ohos:
+        applicationId: "com.example.banana.ohos"
 ```
 
 ### Available fields
@@ -152,6 +160,9 @@ flavorizr:
 | macos:dummyAssets       | macOS         | Generates some default icons for your custom flavors                    |
 | macos:icons             | macOS         | Creates a set of icons for each flavor according to the icon directive  |
 | macos:plist             | macOS         | Updates the info.plist file                                             |
+| ohos:config             | OHOS          | Auto-detects Harmony target files and merges OHOS config (JSON5 AST)   |
+| ohos:products           | OHOS          | Auto-detects Harmony build-profile files and updates products           |
+| ohos:icons              | OHOS          | Copies OHOS icons for each flavor according to the icon directive       |
 
 #### android (under app)
 
@@ -215,13 +226,25 @@ flavorizr:
 | generateDummyAssets | bool       | true    | false    | True if you want to generate dummy assets (xcassets, etc)                                                     |
 | icon                | String     |         | false    | The icon path for this macOS flavor                                                                           | 
 
+#### ohos (under *flavorname*)
+
+| key                 | type   | default | required | description                                                                                       |
+|:--------------------|:-------|:--------|:---------|:--------------------------------------------------------------------------------------------------|
+| applicationId       | String |         | true     | The applicationId of the OHOS app                                                                 |
+| agconnect           | Object |         | false    | An object which contains an AGConnect configuration                                               |
+| resValues           | Array  | {}      | false    | An array which contains a set of resValues configurations                                         |
+| buildConfigFields   | Array  | {}      | false    | An array which contains a set of buildConfigFields configurations                                 |
+| customConfig        | Array  | {}      | false    | An array which contains a set of custom configs used to generate OHOS products                  |
+| generateDummyAssets | bool   | true    | false    | True if you want to generate dummy assets                                                         |
+| icon                | String |         | false    | The icon path for this OHOS flavor                                                                |
+
 #### firebase
 
 | key    | type   | default | required | description                                                                                                                   |
 |:-------|:-------|:--------|:---------|:------------------------------------------------------------------------------------------------------------------------------|
 | config | String |         | false    | The path to the Firebase configuration file (google-services.json for Android and GoogleService-Info.plist for iOS and macOS) |
 
-#### agconnect (for Android)
+#### agconnect (for Android and OHOS)
 
 | key    | type   | default | required | description                                                            |
 |:-------|:-------|:--------|:---------|:-----------------------------------------------------------------------|
@@ -471,10 +494,31 @@ By default, when you do not specify a custom set of processors by appending the 
 * macos:dummyAssets
 * macos:icons
 * macos:plist
+* ohos:config
+* ohos:products
+* ohos:icons
 * google:firebase
 * huawei:agconnect
 * assets:clean
 * ide:config
+
+When `ohos:config` runs, flutter_flavorizr tries to inject into existing Harmony files in this order:
+
+1. `ohos/build-profile5.json5`
+2. `ohos/build-profile.json5`
+3. `build-profile5.json5`
+4. `build-profile.json5`
+5. `AppScope/app.json5`
+6. `entry/src/main/module.json5`
+
+If none of the files exists, it falls back to `ohos/flavorizr.json`.
+
+The `ohos:products` processor follows the same build-profile detection strategy and is aligned with Harmony multi-target concepts described in the official samples and guides.
+If `ohos:products` is selected without `ohos:config`, flutter_flavorizr automatically runs `ohos:config` first.
+When merging into an existing `products` array, it preserves non-flavorizr entries and only overrides entries with the same `name` generated by flavorizr:
+- https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides
+- https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-sample
+- https://gitcode.com/HarmonyOS_Samples/MultiTarget.git
 
 ## Customize your app
 
@@ -558,7 +602,7 @@ Future<void> main() async {
 
 ### Huawei AppGallery Connect
 
-In order to flavorize your project and enable AppGallery Connect in your flavor you have to define an agconnect object below each Android flavor. Under the agconnect object you must define the config path of the agconnect-services.json.
+In order to flavorize your project and enable AppGallery Connect in your flavor you have to define an agconnect object below each Android or OHOS flavor. Under the agconnect object you must define the config path of the agconnect-services.json.
 
 As you can see in the example below, we added the path accordingly
 
@@ -572,6 +616,10 @@ flavors:
       applicationId: "com.example.apple"
       agconnect:
         config: ".agconnect/apple/agconnect-services.json"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      agconnect:
+        config: ".agconnect/apple/agconnect-services.json"
   
     ios:
       bundleId: "com.example.apple"
@@ -582,6 +630,10 @@ flavors:
       
     android:
       applicationId: "com.example.banana"
+      agconnect:
+        config: ".agconnect/banana/agconnect-services.json"
+    ohos:
+      applicationId: "com.example.banana.ohos"
       agconnect:
         config: ".agconnect/banana/agconnect-services.json"
     ios:

@@ -39,5 +39,8 @@ class Pubspec {
   factory Pubspec.fromJson(Map json) => _$PubspecFromJson(json);
 
   factory Pubspec.parse(String yaml) =>
-      checkedYamlDecode(yaml, (o) => Pubspec.fromJson(o ?? {}));
+      checkedYamlDecode(yaml, (o) {
+        print('Pubspec.parse:$o');
+        return Pubspec.fromJson(o ?? {});
+      });
 }

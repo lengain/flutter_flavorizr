@@ -9,6 +9,12 @@ flavors:
 
     android:
       applicationId: "com.example.apple"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      customConfig:
+        productName: "apple_debug"
+      agconnect:
+        config: ".agconnect/apple/agconnect-services.json"
 
     ios:
       bundleId: "com.example.apple"
@@ -45,3 +51,5 @@ flavors:
 
     ios:
       bundleId: "com.example.banana"
+    ohos:
+      applicationId: "com.example.banana.ohos"
