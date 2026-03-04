@@ -59,6 +59,8 @@ flavors:
         resource:
           directories:
             - "./src/main/apple_debug/resources"
+        output:
+          artifactName: "apple_hap"
   banana:
     app:
       name: "Banana App"
@@ -81,12 +83,14 @@ flavors:
 
     final appleSource = Map<String, dynamic>.from(apple['source'] as Map);
     final appleResource = Map<String, dynamic>.from(apple['resource'] as Map);
+    final appleOutput = Map<String, dynamic>.from(apple['output'] as Map);
     expect(appleSource['pages'], <String>['pages/Index']);
     expect(appleSource['sourceRoots'], <String>['./src/apple_debug']);
     expect(appleResource['directories'], <String>[
       './src/main/apple_debug/resources',
       './src/main/resources',
     ]);
+    expect(appleOutput['artifactName'], 'apple_hap');
 
     final bananaSource = Map<String, dynamic>.from(banana['source'] as Map);
     final bananaResource = Map<String, dynamic>.from(banana['resource'] as Map);
@@ -113,6 +117,8 @@ flavors:
             - "pages/NewIndex"
           sourceRoots:
             - "./src/apple_debug"
+        output:
+          artifactName: "apple_new_hap"
 ''');
 
     final input = '''
@@ -121,6 +127,10 @@ flavors:
     {
       "name": "apple_debug",
       "runtimeOS": "HarmonyOS",
+      "output": {
+        "artifactName": "legacy_hap",
+        "compressLevel": 3
+      },
       "resource": {
         "directories": [
           "./src/main/legacy/resources"
@@ -152,6 +162,9 @@ flavors:
     expect(apple['runtimeOS'], 'HarmonyOS');
     expect(apple.containsKey('source'), isTrue);
     expect(apple.containsKey('resource'), isFalse);
+    final output = Map<String, dynamic>.from(apple['output'] as Map);
+    expect(output['artifactName'], 'apple_new_hap');
+    expect(output['compressLevel'], 3);
 
     expect(targets.any((target) => target['name'] == 'legacy'), isTrue);
   });

@@ -25,6 +25,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter_flavorizr/src/processors/ohos/ohos_json_mapping_utils.dart';
 import 'package:flutter_flavorizr/src/processors/commons/string_processor.dart';
 import 'package:json5/json5.dart';
 
@@ -84,6 +85,7 @@ class OhosTargetsProcessor extends StringProcessor {
         }
 
         final generated = <String, dynamic>{'name': name};
+        generated.addAll(_readAdditionalFields(target));
         final source = _readSource(flavorName, target);
         if (source.isNotEmpty) {
           generated['source'] = source;
@@ -132,6 +134,14 @@ class OhosTargetsProcessor extends StringProcessor {
         target['resource'] = generatedTarget['resource'];
       } else {
         target.remove('resource');
+      }
+
+      for (final entry in generatedTarget.entries) {
+        final key = entry.key;
+        if (key == 'name' || key == 'source' || key == 'resource') {
+          continue;
+        }
+        target[key] = OhosJsonMappingUtils.mergeNode(target[key], entry.value);
       }
 
       merged.add(target);
@@ -232,6 +242,13 @@ class OhosTargetsProcessor extends StringProcessor {
       result.add(item);
     }
     return result;
+  }
+
+  Map<String, dynamic> _readAdditionalFields(Map<String, dynamic> target) {
+    return OhosJsonMappingUtils.copyAdditionalFields(
+      target,
+      excludedKeys: {'source', 'resource'},
+    );
   }
 
   String _resolveTargetName(

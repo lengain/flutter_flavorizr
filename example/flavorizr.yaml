@@ -30,6 +30,8 @@ flavors:
             - "./src/apple_debug"
           pages:
             - "pages/Index"
+        output:
+          artifactName: "apple_debug"
         resource:
           directories:
             - "./src/main/apple_debug/resources"

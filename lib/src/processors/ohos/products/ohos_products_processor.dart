@@ -25,6 +25,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter_flavorizr/src/processors/ohos/ohos_json_mapping_utils.dart';
 import 'package:flutter_flavorizr/src/processors/commons/string_processor.dart';
 import 'package:json5/json5.dart';
 
@@ -262,7 +263,7 @@ class OhosProductsProcessor extends StringProcessor {
         }
 
         if (rawProduct.isNotEmpty) {
-          product.addAll(rawProduct);
+          product.addAll(OhosJsonMappingUtils.copyAdditionalFields(rawProduct));
         }
 
         return product;
