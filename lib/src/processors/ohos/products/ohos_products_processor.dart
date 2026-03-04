@@ -214,13 +214,15 @@ class OhosProductsProcessor extends StringProcessor {
                 rawProduct.remove('productName') ??
                 entry.key)
             .toString();
-        final signingConfig =
-            (rawProduct.remove('signingConfig') ?? 'default').toString();
+        final explicitSigningConfig = rawProduct.remove('signingConfig');
+        final signingConfig = _normalizeSigningConfig(
+          explicitSigningConfig?.toString() ?? (flavor.name ?? productName),
+        );
         final compatibleSdkVersion =
-            (rawProduct.remove('compatibleSdkVersion') ?? '5.0.5(17)')
+            (rawProduct.remove('compatibleSdkVersion') ?? '6.0.2(22)')
                 .toString();
         final targetSdkVersion =
-            (rawProduct.remove('targetSdkVersion') ?? '5.0.5(17)').toString();
+            (rawProduct.remove('targetSdkVersion') ?? '6.0.2(22)').toString();
         final runtimeOS =
             (rawProduct.remove('runtimeOS') ?? 'HarmonyOS').toString();
         final bundleName =
@@ -296,5 +298,10 @@ class OhosProductsProcessor extends StringProcessor {
       return cleaned.isEmpty ? null : cleaned;
     }
     return value;
+  }
+
+  String _normalizeSigningConfig(String value) {
+    final normalized = value.replaceAll(RegExp(r'[^A-Za-z0-9]'), '');
+    return normalized.isEmpty ? 'default' : normalized;
   }
 }

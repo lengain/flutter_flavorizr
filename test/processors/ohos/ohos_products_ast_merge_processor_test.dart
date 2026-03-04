@@ -91,7 +91,9 @@ void main() {
     expect(json5Decode(secondOutput), equals(json5Decode(firstOutput)));
   });
 
-  test('Test OhosProductsProcessor preserves non flavorizr products', () {
+  test(
+      'Test OhosProductsProcessor preserves non flavorizr products and defaults signing config to ohos name',
+      () {
     const input = '''
 {
   products: [
@@ -128,8 +130,67 @@ void main() {
     );
     expect(
       products.firstWhere((p) => p['name'] == 'apple_debug')['signingConfig'],
-      'default',
+      'appledebug',
     );
+  });
+
+  test('Test OhosProductsProcessor normalizes explicit product signingConfig',
+      () {
+    const input = '''
+{
+  products: [],
+}
+''';
+    final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      name: "apple_debug"
+      product:
+        signingConfig: "apple_custom_sign"
+''');
+
+    final output = OhosProductsProcessor(
+      input: input,
+      config: config,
+      logger: logger,
+    ).execute();
+    final decoded = Map<String, dynamic>.from(json5Decode(output) as Map);
+    final products = (decoded['products'] as List).cast<Map>();
+    final apple = products.firstWhere((p) => p['name'] == 'apple_debug');
+    expect(apple['signingConfig'], 'applecustomsign');
+  });
+
+  test(
+      'Test OhosProductsProcessor sanitizes default signingConfig from ohos name',
+      () {
+    const input = '''
+{
+  products: [],
+}
+''';
+    final config = Flavorizr.parse('''
+flavors:
+  kiwi:
+    app:
+      name: "Kiwi App"
+    ohos:
+      applicationId: "com.example.kiwi.ohos"
+      name: "kiwi-debug_01@cn"
+''');
+
+    final output = OhosProductsProcessor(
+      input: input,
+      config: config,
+      logger: logger,
+    ).execute();
+    final decoded = Map<String, dynamic>.from(json5Decode(output) as Map);
+    final products = (decoded['products'] as List).cast<Map>();
+    final kiwi = products.firstWhere((p) => p['name'] == 'kiwi-debug_01@cn');
+    expect(kiwi['signingConfig'], 'kiwidebug01cn');
   });
 
   test('Test OhosProductsProcessor migrates legacy root products into app', () {
