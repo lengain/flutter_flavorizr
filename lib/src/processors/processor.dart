@@ -146,11 +146,11 @@ class Processor extends AbstractProcessor<void> {
           instruction.startsWith('android'))
       ..removeWhere((instruction) =>
           (!config.iosFlavorsAvailable ||
-              !Directory(K.iOSPath).existsSync()) &&
+              !Directory(K.iOSRunnerProjectPath).existsSync()) &&
           instruction.startsWith('ios'))
       ..removeWhere((instruction) =>
           (!config.macosFlavorsAvailable ||
-              !Directory(K.macOSPath).existsSync()) &&
+              !Directory(K.macOSRunnerProjectPath).existsSync()) &&
           instruction.startsWith('macos'))
       ..removeWhere((instruction) =>
           (!config.ohosFlavorsAvailable ||
