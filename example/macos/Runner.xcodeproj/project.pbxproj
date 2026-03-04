@@ -532,6 +532,22 @@
 			};
 			name = "Release-apple";
 		};
+		1360AC48AC86BFFBF19D80A1 /* Debug-apple */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 50BA4B9C31F798AD848663CD /* appleDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-apple";
+		};
+		1652377A2FFFC312062F26C5 /* Debug-banana */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0AB8C8470F1A28E8EE0544AA /* bananaDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-banana";
+		};
 		331C80DB294CF71000263BE5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -863,6 +879,14 @@
 			};
 			name = "Profile-banana";
 		};
+		6892447D308147C049F98B18 /* Release-banana */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8FF7574F224CDE6F4EAE3BCB /* bananaRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-banana";
+		};
 		97D0DCEB08F0F433EB5FF1D7 /* Profile-apple */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1208B73992AC5C4BA0E09A63 /* appleProfile.xcconfig */;
@@ -924,6 +948,14 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = "Profile-apple";
+		};
+		B0F23890FA10E3F5FD53C0FF /* Profile-banana */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 163033BB600A5DC696A02050 /* bananaProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-banana";
 		};
 		D457B11DDCA8929391FEF648 /* Release-banana */ = {
 			isa = XCBuildConfiguration;
@@ -1056,6 +1088,22 @@
 			};
 			name = "Debug-apple";
 		};
+		DCF32F317D9C31AE4E055BE5 /* Profile-apple */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1208B73992AC5C4BA0E09A63 /* appleProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-apple";
+		};
+		EF33DC171A74089B0220ACF0 /* Release-apple */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E51F8636FC67CC62BBE2367A /* appleRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-apple";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1091,6 +1139,12 @@
 				33CC10FC2044A3C60003C045 /* Debug */,
 				33CC10FD2044A3C60003C045 /* Release */,
 				338D0CEA231458BD00FA5F75 /* Profile */,
+				1360AC48AC86BFFBF19D80A1 /* Debug-apple */,
+				DCF32F317D9C31AE4E055BE5 /* Profile-apple */,
+				EF33DC171A74089B0220ACF0 /* Release-apple */,
+				1652377A2FFFC312062F26C5 /* Debug-banana */,
+				B0F23890FA10E3F5FD53C0FF /* Profile-banana */,
+				6892447D308147C049F98B18 /* Release-banana */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

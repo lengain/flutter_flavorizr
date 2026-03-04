@@ -144,7 +144,7 @@ void main() {
     );
   });
 
-  test('Test Flavorizr OHOS invalid customConfig type', () {
+  test('Test Flavorizr OHOS invalid product type', () {
     const parser = Parser(
       pubspecPath: 'test_resources/non_existent',
       flavorizrPath: 'test_resources/ohos/flavorizr_invalid_custom_config',

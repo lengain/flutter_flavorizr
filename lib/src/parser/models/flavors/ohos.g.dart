@@ -14,7 +14,7 @@ Ohos _$OhosFromJson(Map json) {
       'firebase',
       'icon',
       'applicationId',
-      'customConfig',
+      'product',
       'resValues',
       'buildConfigFields',
       'agconnect',
@@ -23,7 +23,7 @@ Ohos _$OhosFromJson(Map json) {
   );
   return Ohos(
     applicationId: json['applicationId'] as String,
-    customConfig: (json['customConfig'] as Map?)?.map(
+    product: (Ohos._readProduct(json, 'product') as Map?)?.map(
           (k, e) => MapEntry(k as String, e),
         ) ??
         {},

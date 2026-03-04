@@ -334,6 +334,30 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		0EFBE913CB6BF651B282E4D5 /* Profile-banana */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C00A51ECC1DC4FD469EE41A8 /* bananaProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-banana";
+		};
+		16C6D7F02A440FBC895296A0 /* Release-banana */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 78AC921D8ABC00231A9EBC16 /* bananaRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-banana";
+		};
+		1B7F979426FDC67012E9019B /* Release-apple */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FBEFFA0DD0794F92556571ED /* appleRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-apple";
+		};
 		1F56EA75966EA8279043A74A /* Profile-banana */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C00A51ECC1DC4FD469EE41A8 /* bananaProfile.xcconfig */;
@@ -520,6 +544,14 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
 			};
 			name = Profile;
+		};
+		4DEDC1C6EE1F664684FB233C /* Profile-apple */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 93599BECEDB16B458A9C7B47 /* appleProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-apple";
 		};
 		51C9C4876C29A4C476A279ED /* Release-banana */ = {
 			isa = XCBuildConfiguration;
@@ -959,6 +991,22 @@
 			};
 			name = "Debug-banana";
 		};
+		9F36097C3E5A6655E71A74A8 /* Debug-banana */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CB41EE3B99CF29459DADAADD /* bananaDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-banana";
+		};
+		EB404BA52EE4AA2BC3295879 /* Debug-apple */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2FCBFD0B17331A657473E5C /* appleDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-apple";
+		};
 		FB4DE92A5B20A6BD06526ECD /* Profile-apple */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93599BECEDB16B458A9C7B47 /* appleProfile.xcconfig */;
@@ -1062,6 +1110,12 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+				EB404BA52EE4AA2BC3295879 /* Debug-apple */,
+				4DEDC1C6EE1F664684FB233C /* Profile-apple */,
+				1B7F979426FDC67012E9019B /* Release-apple */,
+				9F36097C3E5A6655E71A74A8 /* Debug-banana */,
+				0EFBE913CB6BF651B282E4D5 /* Profile-banana */,
+				16C6D7F02A440FBC895296A0 /* Release-banana */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -23,6 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import 'dart:io';
+
 import 'package:flutter_flavorizr/src/parser/models/flavorizr.dart';
 import 'package:flutter_flavorizr/src/processors/android/android_dummy_assets_processor.dart';
 import 'package:flutter_flavorizr/src/processors/android/android_manifest_processor.dart';
@@ -162,8 +164,11 @@ class Processor extends AbstractProcessor<void> {
       }
     }
 
-    final confirm =
-        force || logger.confirm('Do you want to proceed?', defaultValue: true);
+    final confirm = force
+        ? true
+        : stdout.hasTerminal
+            ? logger.confirm('Do you want to proceed?', defaultValue: true)
+            : true;
 
     if (confirm) {
       for (String instruction in instructions) {

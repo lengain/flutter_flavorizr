@@ -3,5 +3,5 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      customConfig:
-        productName: "apple_debug"
+      product:
+        name: "apple_debug"

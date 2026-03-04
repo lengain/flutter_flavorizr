@@ -36,10 +36,8 @@ import 'package:mason_logger/mason_logger.dart';
 
 class OhosConfigTargetFileProcessor extends AbstractProcessor<void> {
   static final candidatePaths = [
-    K.ohosBuildProfile5Path,
-    K.ohosBuildProfilePath,
-    K.appBuildProfile5Path,
-    K.appBuildProfilePath,
+    K.ohosAppScopePath,
+    K.ohosEntryModulePath,
     K.appScopePath,
     K.entryModulePath,
   ];

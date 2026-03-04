@@ -74,12 +74,187 @@ void main() {
     );
 
     final actual = jsonDecode(processor.execute()) as Map<String, dynamic>;
-    final products = (actual['products'] as List).cast<Map<String, dynamic>>();
+    final app = Map<String, dynamic>.from(actual['app'] as Map);
+    final products = (app['products'] as List).cast<Map<String, dynamic>>();
+    final appleProduct = Map<String, dynamic>.from(
+      products.firstWhere((product) => product['name'] == 'apple_debug'),
+    );
+    final bananaProduct = Map<String, dynamic>.from(
+      products.firstWhere((product) => product['name'] == 'banana'),
+    );
 
     expect(products.length, 2);
     expect(products.any((product) => product['name'] == 'apple'), isFalse);
     expect(products.any((product) => product['name'] == 'apple_debug'), isTrue);
     expect(products.any((product) => product['name'] == 'banana'), isTrue);
+    expect(appleProduct['compatibleSdkVersion'], '5.0.5(17)');
+    expect(appleProduct['targetSdkVersion'], '5.0.5(17)');
+    expect(appleProduct['runtimeOS'], 'HarmonyOS');
+    expect(appleProduct['bundleName'], 'com.example.apple.ohos');
+    expect(appleProduct['bundleType'], 'app');
+    expect(appleProduct.containsKey('icon'), isFalse);
+    expect(appleProduct.containsKey('label'), isFalse);
+    expect(bananaProduct['bundleName'], 'com.example.banana.ohos');
+  });
+
+  test('Test OhosProductsProcessor supports custom product fields', () {
+    final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      product:
+        name: "apple_release"
+        compatibleSdkVersion: "6.0.0(20)"
+        targetSdkVersion: "6.0.0(20)"
+        runtimeOS: "HarmonyOS"
+        bundleName: "com.custom.apple"
+        bundleType: "app"
+        icon: "\$media:app_icon"
+        label: "\$string:apple_app_name"
+''');
+
+    final processor = OhosProductsProcessor(
+      config: config,
+      logger: logger,
+    );
+
+    final actual = jsonDecode(processor.execute()) as Map<String, dynamic>;
+    final app = Map<String, dynamic>.from(actual['app'] as Map);
+    final products = (app['products'] as List).cast<Map<String, dynamic>>();
+    final product = Map<String, dynamic>.from(products.single);
+
+    expect(product['name'], 'apple_release');
+    expect(product['compatibleSdkVersion'], '6.0.0(20)');
+    expect(product['targetSdkVersion'], '6.0.0(20)');
+    expect(product['bundleName'], 'com.custom.apple');
+    expect(product['icon'], r'$media:app_icon');
+    expect(product['label'], r'$string:apple_app_name');
+  });
+
+  test('Test OhosProductsProcessor maps arbitrary product fields one-to-one',
+      () {
+    final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      product:
+        name: "apple_debug"
+        signingConfig: "releaseSign"
+        someStringField: "customValue"
+        someBooleanField: true
+        someObjectField:
+          enable: true
+          level: "L2"
+        someArrayField:
+          - "a"
+          - "b"
+''');
+
+    final processor = OhosProductsProcessor(
+      config: config,
+      logger: logger,
+    );
+
+    final actual = jsonDecode(processor.execute()) as Map<String, dynamic>;
+    final app = Map<String, dynamic>.from(actual['app'] as Map);
+    final products = (app['products'] as List).cast<Map<String, dynamic>>();
+    final product = Map<String, dynamic>.from(products.single);
+
+    expect(product['name'], 'apple_debug');
+    expect(product['signingConfig'], 'releaseSign');
+    expect(product['someStringField'], 'customValue');
+    expect(product['someBooleanField'], isTrue);
+    expect(
+      Map<String, dynamic>.from(product['someObjectField'] as Map),
+      <String, dynamic>{'enable': true, 'level': 'L2'},
+    );
+    expect(product['someArrayField'], <String>['a', 'b']);
+    expect(product.containsKey('buildOption'), isFalse);
+  });
+
+  test('Test OhosProductsProcessor maps optional strictMode fields', () {
+    final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      product:
+        name: "apple_debug"
+        buildOption:
+          strictMode:
+            caseSensitiveCheck: true
+            useNormalizedOHMUrl: true
+  banana:
+    app:
+      name: "Banana App"
+    ohos:
+      applicationId: "com.example.banana.ohos"
+      product:
+        name: "banana_release"
+''');
+
+    final processor = OhosProductsProcessor(
+      config: config,
+      logger: logger,
+    );
+
+    final actual = jsonDecode(processor.execute()) as Map<String, dynamic>;
+    final app = Map<String, dynamic>.from(actual['app'] as Map);
+    final products = (app['products'] as List).cast<Map<String, dynamic>>();
+    final appleProduct = Map<String, dynamic>.from(
+      products.firstWhere((product) => product['name'] == 'apple_debug'),
+    );
+    final bananaProduct = Map<String, dynamic>.from(
+      products.firstWhere((product) => product['name'] == 'banana_release'),
+    );
+
+    final buildOption = Map<String, dynamic>.from(
+      appleProduct['buildOption'] as Map,
+    );
+    final strictMode = Map<String, dynamic>.from(
+      buildOption['strictMode'] as Map,
+    );
+
+    expect(strictMode['caseSensitiveCheck'], isTrue);
+    expect(strictMode['useNormalizedOHMUrl'], isTrue);
+    expect(bananaProduct.containsKey('buildOption'), isFalse);
+  });
+
+  test(
+      'Test OhosProductsProcessor omits empty strictMode/buildOption sections',
+      () {
+    final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      product:
+        name: "apple_debug"
+        buildOption:
+          strictMode: {}
+''');
+
+    final processor = OhosProductsProcessor(
+      config: config,
+      logger: logger,
+    );
+
+    final actual = jsonDecode(processor.execute()) as Map<String, dynamic>;
+    final app = Map<String, dynamic>.from(actual['app'] as Map);
+    final products = (app['products'] as List).cast<Map<String, dynamic>>();
+    final product = Map<String, dynamic>.from(products.single);
+
+    expect(product.containsKey('buildOption'), isFalse);
   });
 
   test('Test OhosIconsProcessor', () {
@@ -186,8 +361,8 @@ flavors:
       name: "Apple App"
     ohos:
       applicationId: "com.example.apple.ohos"
-      customConfig:
-        productName: "apple_debug"
+      product:
+        name: "apple_debug"
   banana:
     app:
       name: "Banana App"
@@ -204,8 +379,10 @@ flavors:
       await Future<void>.delayed(const Duration(milliseconds: 100));
       final content = profileFile.readAsStringSync();
       final decoded = Map<String, dynamic>.from(json5Decode(content) as Map);
+      final app = Map<String, dynamic>.from(decoded['app'] as Map);
 
-      expect(decoded['products'], isNotNull);
+      expect(app['products'], isNotNull);
+      expect(decoded.containsKey('flavorizr'), isFalse);
       expect(
         File('${temp.path}/${K.ohosProductsPath}').existsSync(),
         isFalse,
@@ -241,8 +418,8 @@ flavors:
       name: "Apple App"
     ohos:
       applicationId: "com.example.apple.ohos"
-      customConfig:
-        productName: "apple_debug"
+      product:
+        name: "apple_debug"
   banana:
     app:
       name: "Banana App"
@@ -264,10 +441,11 @@ flavors:
       await Future<void>.delayed(const Duration(milliseconds: 100));
       final secondRun = profileFile.readAsStringSync();
       final decoded = Map<String, dynamic>.from(json5Decode(secondRun) as Map);
+      final app = Map<String, dynamic>.from(decoded['app'] as Map);
 
       expect(firstRun, secondRun);
       expect(
-        (decoded['products'] as List).isNotEmpty,
+        (app['products'] as List).isNotEmpty,
         isTrue,
       );
     } finally {
@@ -283,7 +461,7 @@ flavors:
 
     try {
       Directory.current = temp;
-      final appScopeFile = File('${temp.path}/${K.appScopePath}')
+      final appScopeFile = File('${temp.path}/${K.ohosAppScopePath}')
         ..createSync(recursive: true)
         ..writeAsStringSync('''
 {
@@ -327,7 +505,7 @@ flavors:
 
     try {
       Directory.current = temp;
-      final moduleFile = File('${temp.path}/${K.entryModulePath}')
+      final moduleFile = File('${temp.path}/${K.ohosEntryModulePath}')
         ..createSync(recursive: true)
         ..writeAsStringSync('''
 {
@@ -388,8 +566,8 @@ flavors:
       name: "Apple App"
     ohos:
       applicationId: "com.example.apple.ohos"
-      customConfig:
-        productName: "apple_debug"
+      product:
+        name: "apple_debug"
 ''');
 
       Processor(

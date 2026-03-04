@@ -38,8 +38,13 @@ class Ohos extends OS {
   @JsonKey(required: true, disallowNullValue: true)
   final String applicationId;
 
-  @JsonKey(disallowNullValue: true, defaultValue: {})
-  final Map<String, dynamic> customConfig;
+  @JsonKey(
+    name: 'product',
+    readValue: _readProduct,
+    disallowNullValue: true,
+    defaultValue: {},
+  )
+  final Map<String, dynamic> product;
 
   @JsonKey(disallowNullValue: true, defaultValue: {})
   final Map<String, ResValue> resValues;
@@ -55,7 +60,7 @@ class Ohos extends OS {
 
   Ohos({
     required this.applicationId,
-    this.customConfig = const {},
+    this.product = const {},
     this.resValues = const {},
     this.buildConfigFields = const {},
     this.agconnect,
@@ -65,6 +70,8 @@ class Ohos extends OS {
     this.adaptiveIcon,
   });
 
-  factory Ohos.fromJson(Map<String, dynamic> json) =>
-      _$OhosFromJson(json);
+  factory Ohos.fromJson(Map<String, dynamic> json) => _$OhosFromJson(json);
+
+  static Object? _readProduct(Map json, String _) =>
+      json['product'] ?? json['customConfig'];
 }

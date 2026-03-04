@@ -234,9 +234,23 @@ flavorizr:
 | agconnect           | Object |         | false    | An object which contains an AGConnect configuration                                               |
 | resValues           | Array  | {}      | false    | An array which contains a set of resValues configurations                                         |
 | buildConfigFields   | Array  | {}      | false    | An array which contains a set of buildConfigFields configurations                                 |
-| customConfig        | Array  | {}      | false    | An array which contains a set of custom configs used to generate OHOS products                  |
+| product             | Object | {}      | false    | Product config for OHOS build-profile `app.products` generation                                 |
 | generateDummyAssets | bool   | true    | false    | True if you want to generate dummy assets                                                         |
 | icon                | String |         | false    | The icon path for this OHOS flavor                                                                |
+
+#### product (for OHOS only)
+
+| key                  | type   | default             | required | description                                 |
+|:---------------------|:-------|:--------------------|:---------|:--------------------------------------------|
+| name                 | String | flavor key          | false    | Product name written to `app.products[].name` |
+| compatibleSdkVersion | String | 5.0.5(17)           | false    | Compatible SDK version                      |
+| targetSdkVersion     | String | 5.0.5(17)           | false    | Target SDK version                          |
+| runtimeOS            | String | HarmonyOS           | false    | Runtime OS                                  |
+| bundleName           | String | ohos.applicationId  | false    | Bundle name                                 |
+| bundleType           | String | app                 | false    | Bundle type                                 |
+| icon                 | String | $media:startIcon    | false    | Product icon resource                       |
+| label                | String | $string:app_name    | false    | Product label resource                      |
+| signingConfig        | String | default             | false    | Signing config name                         |
 
 #### firebase
 
@@ -504,12 +518,10 @@ By default, when you do not specify a custom set of processors by appending the 
 
 When `ohos:config` runs, flutter_flavorizr tries to inject into existing Harmony files in this order:
 
-1. `ohos/build-profile5.json5`
-2. `ohos/build-profile.json5`
-3. `build-profile5.json5`
-4. `build-profile.json5`
-5. `AppScope/app.json5`
-6. `entry/src/main/module.json5`
+1. `ohos/AppScope/app.json5`
+2. `ohos/entry/src/main/module.json5`
+3. `AppScope/app.json5`
+4. `entry/src/main/module.json5`
 
 If none of the files exists, it falls back to `ohos/flavorizr.json`.
 

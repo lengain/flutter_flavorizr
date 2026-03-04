@@ -59,10 +59,12 @@ void main() {
     ).execute();
 
     final decoded = Map<String, dynamic>.from(json5Decode(output) as Map);
-    final products = (decoded['products'] as List).cast<Map>();
+    final app = Map<String, dynamic>.from(decoded['app'] as Map);
+    final products = (app['products'] as List).cast<Map>();
 
-    expect(Map<String, dynamic>.from(decoded['app'] as Map)['name'], 'DemoApp');
+    expect(app['name'], 'DemoApp');
     expect(products.length, 2);
+    expect(decoded.containsKey('products'), isFalse);
   });
 
   test('Test OhosProductsProcessor AST merge is idempotent', () {
@@ -128,5 +130,92 @@ void main() {
       products.firstWhere((p) => p['name'] == 'apple_debug')['signingConfig'],
       'default',
     );
+  });
+
+  test('Test OhosProductsProcessor migrates legacy root products into app', () {
+    const input = '''
+{
+  app: {
+    name: "DemoApp",
+  },
+  products: [
+    {
+      name: "external_product",
+      signingConfig: "external_sign",
+    },
+  ],
+}
+''';
+
+    final output = OhosProductsProcessor(
+      input: input,
+      config: flavorizr,
+      logger: logger,
+    ).execute();
+
+    final decoded = Map<String, dynamic>.from(json5Decode(output) as Map);
+    final app = Map<String, dynamic>.from(decoded['app'] as Map);
+    final products = (app['products'] as List).cast<Map>();
+
+    expect(products.any((p) => p['name'] == 'external_product'), isTrue);
+    expect(decoded.containsKey('products'), isFalse);
+  });
+
+  test('Test OhosProductsProcessor merges entry module targets', () {
+    const input = '''
+{
+  app: {
+    products: [
+      {
+        name: "default",
+        signingConfig: "default",
+      },
+    ],
+  },
+  modules: [
+    {
+      name: "entry",
+      targets: [
+        {
+          name: "default",
+          applyToProducts: [
+            "default",
+          ],
+        },
+        {
+          name: "apple_debug",
+          applyToProducts: [
+            "legacy_apple",
+          ],
+          customField: "keep_me",
+        },
+      ],
+    },
+  ],
+}
+''';
+
+    final output = OhosProductsProcessor(
+      input: input,
+      config: flavorizr,
+      logger: logger,
+    ).execute();
+
+    final decoded = Map<String, dynamic>.from(json5Decode(output) as Map);
+    final modules = (decoded['modules'] as List).cast<Map>();
+    final entry = Map<String, dynamic>.from(
+      modules.firstWhere((m) => m['name'] == 'entry'),
+    );
+    final targets = (entry['targets'] as List).cast<Map>();
+
+    expect(targets.any((t) => t['name'] == 'default'), isTrue);
+    expect(targets.any((t) => t['name'] == 'apple_debug'), isTrue);
+    expect(targets.any((t) => t['name'] == 'banana'), isTrue);
+
+    final appleTarget = Map<String, dynamic>.from(
+      targets.firstWhere((t) => t['name'] == 'apple_debug'),
+    );
+    expect(appleTarget['applyToProducts'], ['apple_debug']);
+    expect(appleTarget['customField'], 'keep_me');
   });
 }

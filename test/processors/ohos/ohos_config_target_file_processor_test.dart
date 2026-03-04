@@ -53,10 +53,10 @@ void main() {
 
     try {
       Directory.current = temp;
-      File(K.ohosBuildProfilePath)
+      File(K.ohosEntryModulePath)
         ..createSync(recursive: true)
-        ..writeAsStringSync('{ app: { name: "ohosProfile" } }');
-      File(K.appScopePath)
+        ..writeAsStringSync('{ module: { name: "entry" } }');
+      File(K.ohosAppScopePath)
         ..createSync(recursive: true)
         ..writeAsStringSync('{ app: { bundleName: "demo.app" } }');
 
@@ -66,11 +66,11 @@ void main() {
       ).execute();
 
       expect(
-        File(K.ohosBuildProfilePath).readAsStringSync().contains('ohosConfig'),
+        File(K.ohosAppScopePath).readAsStringSync().contains('ohosConfig'),
         isTrue,
       );
       expect(
-        File(K.appScopePath).readAsStringSync().contains('ohosConfig'),
+        File(K.ohosEntryModulePath).readAsStringSync().contains('ohosConfig'),
         isFalse,
       );
     } finally {

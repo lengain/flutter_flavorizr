@@ -35,6 +35,8 @@ flavorizr:
         applicationId: "com.example.apple"
       ohos:
         applicationId: "com.example.apple.ohos"
+        product:
+          name: "apple_debug"
 
       ios:
         bundleId: "com.example.apple"
@@ -72,6 +74,8 @@ flavorizr:
         bundleId: "com.example.banana"
       ohos:
         applicationId: "com.example.banana.ohos"
+        product:
+          name: "banana_release"
 
 
 # For information on the generic Dart part of this file, see the

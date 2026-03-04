@@ -11,8 +11,8 @@ flavors:
       applicationId: "com.example.apple"
     ohos:
       applicationId: "com.example.apple.ohos"
-      customConfig:
-        productName: "apple_debug"
+      product:
+        name: "apple_debug"
       agconnect:
         config: ".agconnect/apple/agconnect-services.json"
 

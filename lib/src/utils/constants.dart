@@ -125,6 +125,10 @@ class K {
 
   static String entryModulePath = 'entry/src/main/module.json5';
 
+  static String ohosAppScopePath = '$ohosPath/AppScope/app.json5';
+
+  static String ohosEntryModulePath = '$ohosPath/entry/src/main/module.json5';
+
   static String ohosProductsPath = '$ohosPath/build-profile.generated.json5';
 
   static String ohosEntryPath = '$ohosPath/entry';

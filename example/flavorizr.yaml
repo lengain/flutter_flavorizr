@@ -11,8 +11,19 @@ flavors:
       applicationId: "com.example.apple"
     ohos:
       applicationId: "com.example.apple.ohos"
-      customConfig:
-        productName: "apple_debug"
+      product:
+        name: "apple_debug"
+        compatibleSdkVersion: "5.0.5(17)"
+        targetSdkVersion: "5.0.5(17)"
+        runtimeOS: "HarmonyOS"
+        bundleType: "app"
+        icon: "$media:startIcon"
+        label: "$string:app_name"
+        buildOption:
+          strictMode:
+            caseSensitiveCheck: true
+            useNormalizedOHMUrl: true
+        versionName: "1.0.2"    
       agconnect:
         config: ".agconnect/apple/agconnect-services.json"
     ios:
@@ -28,8 +39,14 @@ flavors:
       applicationId: "com.example.banana"
     ohos:
       applicationId: "com.example.banana.ohos"
-      customConfig:
-        productName: "banana_release"
+      product:
+        name: "banana_release"
+        compatibleSdkVersion: "5.0.5(17)"
+        targetSdkVersion: "5.0.5(17)"
+        runtimeOS: "HarmonyOS"
+        bundleType: "app"
+        icon: "$media:startIcon"
+        label: "$string:app_name"
       agconnect:
         config: ".agconnect/banana/agconnect-services.json"
     ios:
