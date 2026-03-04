@@ -28,7 +28,6 @@ import 'dart:io';
 
 import 'package:flutter_flavorizr/src/parser/models/flavorizr.dart';
 import 'package:flutter_flavorizr/src/parser/parser.dart';
-import 'package:flutter_flavorizr/src/processors/ohos/config/ohos_config_processor.dart';
 import 'package:flutter_flavorizr/src/processors/ohos/icons/ohos_icons_processor.dart';
 import 'package:flutter_flavorizr/src/processors/ohos/products/ohos_products_processor.dart';
 import 'package:flutter_flavorizr/src/processors/processor.dart';
@@ -48,23 +47,6 @@ void main() {
       flavorizrPath: 'test_resources/flavorizr',
     );
     flavorizr = parser.parse();
-  });
-
-  test('Test OhosConfigProcessor', () {
-    final processor = OhosConfigProcessor(
-      config: flavorizr,
-      logger: logger,
-    );
-
-    final actual = jsonDecode(processor.execute()) as Map<String, dynamic>;
-    final flavors = (actual['flavors'] as List).cast<Map<String, dynamic>>();
-
-    expect(flavors.length, 2);
-    expect(
-      flavors
-          .any((flavor) => flavor['applicationId'] == 'com.example.apple.ohos'),
-      isTrue,
-    );
   });
 
   test('Test OhosProductsProcessor', () {
@@ -87,8 +69,8 @@ void main() {
     expect(products.any((product) => product['name'] == 'apple'), isFalse);
     expect(products.any((product) => product['name'] == 'apple_debug'), isTrue);
     expect(products.any((product) => product['name'] == 'banana'), isTrue);
-    expect(appleProduct['compatibleSdkVersion'], '5.0.5(17)');
-    expect(appleProduct['targetSdkVersion'], '5.0.5(17)');
+    expect(appleProduct['compatibleSdkVersion'], '6.0.2(22)');
+    expect(appleProduct['targetSdkVersion'], '6.0.2(22)');
     expect(appleProduct['runtimeOS'], 'HarmonyOS');
     expect(appleProduct['bundleName'], 'com.example.apple.ohos');
     expect(appleProduct['bundleType'], 'app');
@@ -340,7 +322,7 @@ flavors:
 
       final config = Flavorizr.parse('''
 instructions:
-  - ohos:config
+  - ohos:products
 flavors:
   apple:
     app:
@@ -354,7 +336,7 @@ flavors:
       ).execute();
 
       await Future<void>.delayed(const Duration(milliseconds: 100));
-      expect(File('${temp.path}/ohos/flavorizr.json').existsSync(), isFalse);
+      expect(File('${temp.path}/${K.ohosBuildProfilePath}').existsSync(), isFalse);
     } finally {
       Directory.current = previousCwd;
       temp.deleteSync(recursive: true);
@@ -480,105 +462,7 @@ flavors:
     }
   });
 
-  test('Test ohos:config keeps AppScope app.json5 clean', () async {
-    final previousCwd = Directory.current;
-    final temp =
-        Directory.systemTemp.createTempSync('flavorizr_ohos_config_appscope_');
-
-    try {
-      Directory.current = temp;
-      final appScopeFile = File('${temp.path}/${K.ohosAppScopePath}')
-        ..createSync(recursive: true)
-        ..writeAsStringSync('''
-{
-  app: {
-    bundleName: "com.example.demo",
-  },
-}
-''');
-
-      final config = Flavorizr.parse('''
-instructions:
-  - ohos:config
-flavors:
-  apple:
-    app:
-      name: "Apple App"
-    ohos:
-      applicationId: "com.example.apple.ohos"
-''');
-
-      Processor(
-        config,
-        force: true,
-        logger: logger,
-      ).execute();
-
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      final content = appScopeFile.readAsStringSync();
-      expect(content.contains('ohosConfig'), isFalse);
-      expect(content.contains('flavorizr'), isFalse);
-      expect(
-        File('${temp.path}/${K.ohosFlavorizrPath}').existsSync(),
-        isFalse,
-      );
-    } finally {
-      Directory.current = previousCwd;
-      temp.deleteSync(recursive: true);
-    }
-  });
-
-  test('Test ohos:config is idempotent on entry module json5', () async {
-    final previousCwd = Directory.current;
-    final temp =
-        Directory.systemTemp.createTempSync('flavorizr_ohos_config_module_');
-
-    try {
-      Directory.current = temp;
-      final moduleFile = File('${temp.path}/${K.ohosEntryModulePath}')
-        ..createSync(recursive: true)
-        ..writeAsStringSync('''
-{
-  module: {
-    name: "entry",
-  },
-}
-''');
-
-      final config = Flavorizr.parse('''
-instructions:
-  - ohos:config
-flavors:
-  apple:
-    app:
-      name: "Apple App"
-    ohos:
-      applicationId: "com.example.apple.ohos"
-''');
-
-      final processor = Processor(
-        config,
-        force: true,
-        logger: logger,
-      );
-
-      processor.execute();
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      final firstRun = moduleFile.readAsStringSync();
-
-      processor.execute();
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      final secondRun = moduleFile.readAsStringSync();
-
-      expect(firstRun, secondRun);
-    } finally {
-      Directory.current = previousCwd;
-      temp.deleteSync(recursive: true);
-    }
-  });
-
-  test(
-      'Test ohos:products auto invokes ohos:config when missing in instructions',
+  test('Test ohos:products works when only products instruction is configured',
       () async {
     final previousCwd = Directory.current;
     final temp = Directory.systemTemp
@@ -610,19 +494,14 @@ flavors:
 
       final generatedProducts =
           File('${temp.path}/${K.ohosProductsPath}').existsSync();
-      final generatedConfig =
-          File('${temp.path}/${K.ohosFlavorizrPath}').existsSync();
-
       expect(generatedProducts, isTrue);
-      expect(generatedConfig, isFalse);
     } finally {
       Directory.current = previousCwd;
       temp.deleteSync(recursive: true);
     }
   });
 
-  test(
-      'Test ohos:targets auto invokes ohos:config when missing in instructions',
+  test('Test ohos:targets works when only targets instruction is configured',
       () async {
     final previousCwd = Directory.current;
     final temp = Directory.systemTemp

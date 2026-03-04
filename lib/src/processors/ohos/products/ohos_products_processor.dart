@@ -71,13 +71,11 @@ class OhosProductsProcessor extends StringProcessor {
         generatedProductNames:
             products.map((product) => product['name'] as String).toList(),
       );
-      _removeLegacyOhosConfig(root);
       return json5Encode(root, space: 2);
     }
 
     root['products'] =
         _mergeProducts(existing: root['products'], generated: products);
-    _removeLegacyOhosConfig(root);
     return json5Encode(root, space: 2);
   }
 
@@ -189,21 +187,6 @@ class OhosProductsProcessor extends StringProcessor {
     }
 
     return merged;
-  }
-
-  void _removeLegacyOhosConfig(Map<String, dynamic> root) {
-    final flavorizrNode = root['flavorizr'];
-    if (flavorizrNode is! Map) {
-      return;
-    }
-
-    final flavorizr = Map<String, dynamic>.from(flavorizrNode);
-    flavorizr.remove('ohosConfig');
-    if (flavorizr.isEmpty) {
-      root.remove('flavorizr');
-    } else {
-      root['flavorizr'] = flavorizr;
-    }
   }
 
   List<Map<String, dynamic>> buildProducts() =>

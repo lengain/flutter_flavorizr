@@ -139,8 +139,8 @@ flowchart LR
 
 建议新增以下最小可用指令集合（MVP）：
 
-- `ohos:config`：生成/更新 OHOS flavor 基础配置
 - `ohos:products`：将 flavor 映射为多产品构建配置
+- `ohos:targets`：将 flavor 映射为 entry 多目标构建配置
 - `ohos:icons`：可选，处理图标产物（若资产链路准备完成）
 
 命名规则：`<platform>:<action>`，与现有 `android:* / ios:* / macos:*` 保持一致。
@@ -149,8 +149,8 @@ flowchart LR
 
 1. `assets:download`
 2. `assets:extract`
-3. `ohos:config`
-4. `ohos:products`
+3. `ohos:products`
+4. `ohos:targets`
 5. `huawei:agconnect`（可复用或扩展为 OHOS 目标目录）
 6. `ohos:icons`（可选）
 7. `assets:clean`
@@ -158,7 +158,6 @@ flowchart LR
 ## 7.3 依赖与幂等性要求
 
 - `ohos:*` 指令仅在 `ohosFlavorsAvailable == true` 时执行。
-- `ohos:products` 依赖 `ohos:config` 成功执行。
 - 每次重复运行必须得到同构结果（无重复块、无叠加脏数据）。
 - `ohos:products` 在合并已有 `products` 数组时，必须保留非 flavorizr 管理条目，仅覆盖同名 `name` 的条目（支持多人协作下的增量合并）。
 - 指令失败时输出明确失败点，不应静默吞错。
@@ -223,7 +222,7 @@ flowchart LR
 ### 11.2 迁移策略
 
 - 阶段 1（模型闭环）：仅打通解析与聚合，不默认启用复杂处理器
-- 阶段 2（指令接入）：引入 `ohos:config / ohos:products` 并补测试
+- 阶段 2（指令接入）：引入 `ohos:products / ohos:targets` 并补测试
 - 阶段 3（文档公开）：README/示例/变更日志齐备后正式发布
 
 ### 11.3 向后兼容策略
@@ -235,7 +234,7 @@ flowchart LR
 ## 12. 里程碑建议
 
 - M1：模型与解析打通（含生成文件与解析单测）
-- M2：处理器最小链路可用（`ohos:config`、`ohos:products`）
+- M2：处理器最小链路可用（`ohos:products`、`ohos:targets`）
 - M3：文档与示例完整、回归通过、发布说明准备完成
 
 ## 13. 参考资料

@@ -63,7 +63,6 @@ import 'package:flutter_flavorizr/src/processors/macos/dummy_assets/macos_dummy_
 import 'package:flutter_flavorizr/src/processors/macos/icons/macos_icons_processor.dart';
 import 'package:flutter_flavorizr/src/processors/macos/macos_plist_processor.dart';
 import 'package:flutter_flavorizr/src/processors/macos/xcconfig/macos_xcconfig_targets_file_processor.dart';
-import 'package:flutter_flavorizr/src/processors/ohos/config/ohos_config_target_file_processor.dart';
 import 'package:flutter_flavorizr/src/processors/ohos/icons/ohos_icons_processor.dart';
 import 'package:flutter_flavorizr/src/processors/ohos/products/ohos_products_target_file_processor.dart';
 import 'package:flutter_flavorizr/src/processors/ohos/targets/ohos_targets_target_file_processor.dart';
@@ -113,7 +112,6 @@ class Processor extends AbstractProcessor<void> {
     'macos:plist',
 
     // OHOS
-    'ohos:config',
     'ohos:products',
     'ohos:targets',
     'ohos:icons',
@@ -150,17 +148,6 @@ class Processor extends AbstractProcessor<void> {
           !config.macosFlavorsAvailable && instruction.startsWith('macos'))
       ..removeWhere((instruction) =>
           !config.ohosFlavorsAvailable && instruction.startsWith('ohos'));
-
-    if (!instructions.contains('ohos:config')) {
-      final productsIndex = instructions.indexOf('ohos:products');
-      final targetsIndex = instructions.indexOf('ohos:targets');
-      final anchorIndex = productsIndex != -1
-          ? productsIndex
-          : (targetsIndex != -1 ? targetsIndex : -1);
-      if (anchorIndex != -1) {
-        instructions.insert(anchorIndex, 'ohos:config');
-      }
-    }
 
     logger.info('Flavorization process started');
 
@@ -446,10 +433,6 @@ class Processor extends AbstractProcessor<void> {
           ),
 
       // OHOS
-      'ohos:config': () => OhosConfigTargetFileProcessor(
-            config: flavorizr,
-            logger: logger,
-          ),
       'ohos:products': () => OhosProductsTargetFileProcessor(
             config: flavorizr,
             logger: logger,
