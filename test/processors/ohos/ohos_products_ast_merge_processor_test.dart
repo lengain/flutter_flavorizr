@@ -147,7 +147,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
       product:
         signingConfig: "apple_custom_sign"
@@ -178,7 +178,7 @@ flavors:
     app:
       name: "Kiwi App"
     ohos:
-      applicationId: "com.example.kiwi.ohos"
+      bundleName: "com.example.kiwi.ohos"
       name: "kiwi-debug_01@cn"
 ''');
 

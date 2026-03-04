@@ -208,7 +208,7 @@ class OhosProductsProcessor extends StringProcessor {
         final targetSdkVersion = rawProduct.remove('targetSdkVersion');
         final runtimeOS =
             (rawProduct.remove('runtimeOS') ?? 'HarmonyOS').toString();
-        final bundleName = rawProduct.remove('bundleName');
+        final bundleName = rawProduct.remove('bundleName') ?? flavor.bundleName;
         final bundleType = rawProduct.remove('bundleType');
         final icon = rawProduct.remove('icon');
         final label = rawProduct.remove('label');

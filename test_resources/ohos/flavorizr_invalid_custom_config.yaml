@@ -3,6 +3,6 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         - invalid

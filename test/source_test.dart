@@ -24,7 +24,6 @@
  */
 
 import 'package:flutter_flavorizr/src/exception/configuration_not_found_exception.dart';
-import 'package:flutter_flavorizr/src/exception/missing_required_fields_exception.dart';
 import 'package:flutter_flavorizr/src/exception/null_fields_exception.dart';
 import 'package:flutter_flavorizr/src/parser/models/flavorizr.dart';
 import 'package:flutter_flavorizr/src/parser/parser.dart';
@@ -56,7 +55,7 @@ void main() {
     expect(flavorizr.ohosFlavorsAvailable, isTrue);
     expect(flavorizr.ohosFlavors.keys, containsAll(['apple', 'banana']));
     expect(
-      flavorizr.ohosFlavors['apple']?.ohos?.applicationId,
+      flavorizr.ohosFlavors['apple']?.ohos?.bundleName,
       equals('com.example.apple.ohos'),
     );
   });
@@ -87,7 +86,7 @@ void main() {
     expect(flavorizr.ohosFlavorsAvailable, isTrue);
     expect(flavorizr.ohosFlavors.keys, containsAll(['apple', 'banana']));
     expect(
-      flavorizr.ohosFlavors['banana']?.ohos?.applicationId,
+      flavorizr.ohosFlavors['banana']?.ohos?.bundleName,
       equals('com.example.banana.ohos'),
     );
   });
@@ -120,16 +119,15 @@ void main() {
     expect(parser, isNotNull);
   });
 
-  test('Test Flavorizr OHOS missing required applicationId', () {
+  test('Test Flavorizr OHOS allows missing bundleName', () {
     const parser = Parser(
       pubspecPath: 'test_resources/non_existent',
-      flavorizrPath: 'test_resources/ohos/flavorizr_missing_application_id',
+      flavorizrPath: 'test_resources/ohos/flavorizr_missing_bundle_name',
     );
 
-    expect(
-      parser.parse,
-      throwsA(isA<MissingRequiredFieldsException>()),
-    );
+    final flavorizr = parser.parse();
+    expect(flavorizr.ohosFlavorsAvailable, isTrue);
+    expect(flavorizr.ohosFlavors['apple']?.ohos?.bundleName, isNull);
   });
 
   test('Test Flavorizr OHOS null value', () {

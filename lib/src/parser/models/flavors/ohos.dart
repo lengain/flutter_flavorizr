@@ -34,8 +34,8 @@ part 'ohos.g.dart';
 
 @JsonSerializable(anyMap: true, createToJson: false)
 class Ohos extends OS {
-  @JsonKey(required: true, disallowNullValue: true)
-  final String applicationId;
+  @JsonKey(required: false, disallowNullValue: true)
+  final String? bundleName;
 
   @JsonKey(disallowNullValue: true)
   final String? name;
@@ -61,7 +61,7 @@ class Ohos extends OS {
   final AdaptiveIcon? adaptiveIcon;
 
   Ohos({
-    required this.applicationId,
+    this.bundleName,
     this.name,
     this.target,
     this.product = const {},

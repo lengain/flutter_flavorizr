@@ -9,11 +9,10 @@ part of 'ohos.dart';
 Ohos _$OhosFromJson(Map json) {
   $checkKeys(
     json,
-    requiredKeys: const ['applicationId'],
     disallowNullValues: const [
       'firebase',
       'icon',
-      'applicationId',
+      'bundleName',
       'name',
       'target',
       'product',
@@ -23,7 +22,7 @@ Ohos _$OhosFromJson(Map json) {
     ],
   );
   return Ohos(
-    applicationId: json['applicationId'] as String,
+    bundleName: json['bundleName'] as String?,
     name: json['name'] as String?,
     target: (json['target'] as Map?)?.map(
       (k, e) => MapEntry(k as String, e),

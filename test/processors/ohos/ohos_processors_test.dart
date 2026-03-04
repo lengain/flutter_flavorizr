@@ -74,9 +74,9 @@ void main() {
     expect(appleProduct['runtimeOS'], 'HarmonyOS');
     expect(appleProduct.containsKey('icon'), isFalse);
     expect(appleProduct.containsKey('label'), isFalse);
-    expect(appleProduct.containsKey('bundleName'), isFalse);
+    expect(appleProduct.containsKey('bundleName'), isTrue);
     expect(appleProduct.containsKey('bundleType'), isFalse);
-    expect(bananaProduct.containsKey('bundleName'), isFalse);
+    expect(bananaProduct.containsKey('bundleName'), isTrue);
     expect(bananaProduct.containsKey('bundleType'), isFalse);
   });
 
@@ -87,7 +87,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         name: "apple_release"
         compatibleSdkVersion: "6.0.0(20)"
@@ -125,7 +125,7 @@ flavors:
       name: "Apple App"
     ohos:
       name: "apple_ohos_debug"
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         compatibleSdkVersion: "6.0.0(20)"
 ''');
@@ -152,7 +152,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         name: "apple_debug"
         signingConfig: "releaseSign"
@@ -195,7 +195,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         name: "apple_debug"
         buildOption:
@@ -206,7 +206,7 @@ flavors:
     app:
       name: "Banana App"
     ohos:
-      applicationId: "com.example.banana.ohos"
+      bundleName: "com.example.banana.ohos"
       product:
         name: "banana_release"
 ''');
@@ -246,7 +246,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         name: "apple_debug"
         buildOption:
@@ -283,13 +283,13 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       icon: "${appleIcon.path}"
   banana:
     app:
       name: "Banana App"
     ohos:
-      applicationId: "com.example.banana.ohos"
+      bundleName: "com.example.banana.ohos"
       icon: "${bananaIcon.path}"
 ''');
 
@@ -369,14 +369,14 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         name: "apple_debug"
   banana:
     app:
       name: "Banana App"
     ohos:
-      applicationId: "com.example.banana.ohos"
+      bundleName: "com.example.banana.ohos"
 ''');
 
       Processor(
@@ -426,14 +426,14 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         name: "apple_debug"
   banana:
     app:
       name: "Banana App"
     ohos:
-      applicationId: "com.example.banana.ohos"
+      bundleName: "com.example.banana.ohos"
 ''');
 
       final processor = Processor(
@@ -480,7 +480,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       product:
         name: "apple_debug"
 ''');
@@ -526,7 +526,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
 ''');
 

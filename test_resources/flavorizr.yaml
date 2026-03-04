@@ -10,7 +10,7 @@ flavors:
     android:
       applicationId: "com.example.apple"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
       product:
         name: "apple_debug"
@@ -60,4 +60,4 @@ flavors:
     ios:
       bundleId: "com.example.banana"
     ohos:
-      applicationId: "com.example.banana.ohos"
+      bundleName: "com.example.banana.ohos"

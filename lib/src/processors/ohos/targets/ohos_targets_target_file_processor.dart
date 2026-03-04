@@ -82,9 +82,6 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
     List<Map<String, dynamic>> targets,
   ) {
     final entryRootPath = File(targetPath).parent.path;
-    final mainResourcesPath =
-        _resolvePath(entryRootPath, './src/main/resources');
-    final mainResourcesDir = Directory(mainResourcesPath);
 
     for (final target in targets) {
       final name = target['name']?.toString();
@@ -112,45 +109,27 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
           if (resourceDirectory is! String || resourceDirectory.isEmpty) {
             continue;
           }
-          final targetDirectory = Directory(
-            _resolvePath(entryRootPath, resourceDirectory),
-          );
-          targetDirectory.createSync(recursive: true);
           if (_isMainResources(resourceDirectory)) {
             continue;
           }
-          if (mainResourcesDir.existsSync()) {
-            _copyDirectoryContent(mainResourcesDir, targetDirectory);
-          }
-        }
-      } else {
-        final flavorResourcesDir = Directory(
-          _resolvePath(entryRootPath, './src/main/$name/resources'),
-        )..createSync(recursive: true);
-        mainResourcesDir.createSync(recursive: true);
-        if (mainResourcesDir.existsSync()) {
-          _copyDirectoryContent(mainResourcesDir, flavorResourcesDir);
+          final targetDirectory =
+              Directory(_resolvePath(entryRootPath, resourceDirectory))
+                ..createSync(recursive: true);
+          _ensureResourceScaffold(targetDirectory);
         }
       }
     }
   }
 
-  void _copyDirectoryContent(Directory source, Directory destination) {
-    for (final entity in source.listSync(recursive: false)) {
-      if (entity is File) {
-        final targetFile =
-            File('${destination.path}/${_basename(entity.path)}');
-        if (targetFile.existsSync()) {
-          continue;
-        }
-        targetFile.createSync(recursive: true);
-        entity.copySync(targetFile.path);
-      } else if (entity is Directory) {
-        final targetDir = Directory(
-          '${destination.path}/${_basename(entity.path)}',
-        )..createSync(recursive: true);
-        _copyDirectoryContent(entity, targetDir);
-      }
+  void _ensureResourceScaffold(Directory directory) {
+    const requiredPaths = <String>[
+      'base/element',
+      'base/media',
+      'en_US/element',
+      'zh_CN/element',
+    ];
+    for (final relativePath in requiredPaths) {
+      Directory('${directory.path}/$relativePath').createSync(recursive: true);
     }
   }
 
@@ -168,12 +147,6 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
         .replaceAll('\\', '/')
         .replaceFirst(RegExp(r'^\./'), '');
     return '$base/$relative';
-  }
-
-  String _basename(String path) {
-    final normalized = path.replaceAll('\\', '/');
-    final index = normalized.lastIndexOf('/');
-    return index == -1 ? normalized : normalized.substring(index + 1);
   }
 
   @override

@@ -41,14 +41,15 @@ void main() {
     logger = Logger(level: Level.quiet);
   });
 
-  test('Test OhosTargetsProcessor maps configured and default targets', () {
+  test('Test OhosTargetsProcessor maps configured target and optional source',
+      () {
     final config = Flavorizr.parse('''
 flavors:
   apple:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
       target:
         source:
@@ -65,7 +66,7 @@ flavors:
     app:
       name: "Banana App"
     ohos:
-      applicationId: "com.example.banana.ohos"
+      bundleName: "com.example.banana.ohos"
       name: "banana_release"
 ''');
 
@@ -92,14 +93,8 @@ flavors:
     ]);
     expect(appleOutput['artifactName'], 'apple_hap');
 
-    final bananaSource = Map<String, dynamic>.from(banana['source'] as Map);
-    final bananaResource = Map<String, dynamic>.from(banana['resource'] as Map);
-    expect(bananaSource['pages'], <String>['pages/Index']);
-    expect(bananaSource['sourceRoots'], <String>['./src/banana_release']);
-    expect(bananaResource['directories'], <String>[
-      './src/main/banana_release/resources',
-      './src/main/resources',
-    ]);
+    expect(banana.containsKey('source'), isFalse);
+    expect(banana.containsKey('resource'), isFalse);
   });
 
   test('Test OhosTargetsProcessor merges by name and keeps unknown fields', () {
@@ -109,7 +104,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
       target:
         source:
@@ -176,7 +171,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       target:
         source:
           pages: "pages/Index"
@@ -202,7 +197,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
       target:
         source:
@@ -250,7 +245,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
       target:
         source:
@@ -302,7 +297,7 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
 ''');
 
@@ -320,8 +315,7 @@ flavors:
     }
   });
 
-  test(
-      'Test OhosTargetsTargetFileProcessor does not overwrite existing resources',
+  test('Test OhosTargetsTargetFileProcessor prepares resource directories only',
       () {
     final previousCwd = Directory.current;
     final temp =
@@ -336,15 +330,11 @@ flavors:
   "apiType": "stageMode"
 }
 ''');
-      File(
-          '${temp.path}/ohos/entry/src/main/resources/base/element/string.json')
-        ..createSync(recursive: true)
-        ..writeAsStringSync('from-main');
-      final flavorResourceFile = File(
-        '${temp.path}/ohos/entry/src/main/apple_debug/resources/base/element/string.json',
+      final mainResourceFile = File(
+        '${temp.path}/ohos/entry/src/main/resources/base/element/string.json',
       )
         ..createSync(recursive: true)
-        ..writeAsStringSync('custom-existing');
+        ..writeAsStringSync('from-main');
 
       final config = Flavorizr.parse('''
 flavors:
@@ -352,13 +342,45 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
       name: "apple_debug"
+      target:
+        source:
+          sourceRoots:
+            - "./src/apple_debug"
+        resource:
+          directories:
+            - "./src/main/apple_debug/resources"
+            - "./src/main/resources"
 ''');
 
       OhosTargetsTargetFileProcessor(config: config, logger: logger).execute();
 
-      expect(flavorResourceFile.readAsStringSync(), 'custom-existing');
+      final flavorResources = Directory(
+        '${temp.path}/ohos/entry/src/main/apple_debug/resources',
+      );
+      expect(flavorResources.existsSync(), isTrue);
+      expect(
+        Directory('${flavorResources.path}/base/element').existsSync(),
+        isTrue,
+      );
+      expect(
+        Directory('${flavorResources.path}/base/media').existsSync(),
+        isTrue,
+      );
+      expect(
+        Directory('${flavorResources.path}/en_US/element').existsSync(),
+        isTrue,
+      );
+      expect(
+        Directory('${flavorResources.path}/zh_CN/element').existsSync(),
+        isTrue,
+      );
+      expect(
+        File('${flavorResources.path}/base/element/string.json').existsSync(),
+        isFalse,
+      );
+      expect(mainResourceFile.readAsStringSync(), 'from-main');
     } finally {
       Directory.current = previousCwd;
       temp.deleteSync(recursive: true);

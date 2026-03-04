@@ -69,19 +69,7 @@ class OhosTargetsProcessor extends StringProcessor {
         final target = ohos.target;
 
         if (target == null) {
-          return <String, dynamic>{
-            'name': name,
-            'source': {
-              'pages': ['pages/Index'],
-              'sourceRoots': ['./src/$name'],
-            },
-            'resource': {
-              'directories': [
-                './src/main/$name/resources',
-                _mainResourcesDirectory,
-              ],
-            },
-          };
+          return <String, dynamic>{'name': name};
         }
 
         final generated = <String, dynamic>{'name': name};

@@ -10,6 +10,8 @@ A flutter utility to easily create flavors in your flutter application
 
 If you want to support this project, please leave a star, share this project, or consider donating through [Github Sponsor](https://github.com/sponsors/AngeloAvv).
 
+[English](README.md) | [中文](README_CN.md)
+
 ## Getting Started
 
 Let's start by setting up our environment in order to run Flutter Flavorizr
@@ -50,7 +52,7 @@ Once all of the prerequisites have been installed and you have added flutter_fla
 
 ### Example
 
-Create a new file named flavorizr.yaml and define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*. If you want to generate HarmonyOS assets too, add the `ohos` section with its `applicationId`.
+Create a new file named flavorizr.yaml and define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*. If you want to generate HarmonyOS assets too, add the `ohos` section with its `bundleName`.
 
 ```yaml
 flavors:
@@ -65,7 +67,7 @@ flavors:
     macos:
       bundleId: "com.example.apple"  
     ohos:
-      applicationId: "com.example.apple.ohos"
+      bundleName: "com.example.apple.ohos"
   banana:
     app:
       name: "Banana App"
@@ -77,11 +79,11 @@ flavors:
     macos:
       bundleId: "com.example.banana"
     ohos:
-      applicationId: "com.example.banana.ohos"
+      bundleName: "com.example.banana.ohos"
 ```
 
 Alternatively, add a new key named flavorizr and define a sub item named *flavors*. 
-Under the flavors array you can define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*. Optionally, you can also define an `ohos` section with an OHOS-specific `applicationId`.
+Under the flavors array you can define the name of the flavors, in our example *apple* and *banana*. For each flavor you have to specify the *app name*, the *applicationId* and the *bundleId*. Optionally, you can also define an `ohos` section with an OHOS-specific `bundleName`.
 This way of defining flavors will be deprecated in versions 3.x
 
 ```yaml
@@ -98,7 +100,7 @@ flavorizr:
       macos:
         bundleId: "com.example.apple"
       ohos:
-        applicationId: "com.example.apple.ohos"
+        bundleName: "com.example.apple.ohos"
     banana:
       app:
         name: "Banana App"
@@ -110,7 +112,7 @@ flavorizr:
       macos:
         bundleId: "com.example.banana"
       ohos:
-        applicationId: "com.example.banana.ohos"
+        bundleName: "com.example.banana.ohos"
 ```
 
 ### Available fields
@@ -230,7 +232,7 @@ flavorizr:
 
 | key                 | type   | default | required | description                                                                                       |
 |:--------------------|:-------|:--------|:---------|:--------------------------------------------------------------------------------------------------|
-| applicationId       | String |         | true     | The applicationId of the OHOS app                                                                 |
+| bundleName          | String |         | false    | The bundleName of the OHOS app                                                                    |
 | agconnect           | Object |         | false    | An object which contains an AGConnect configuration                                               |
 | resValues           | Array  | {}      | false    | An array which contains a set of resValues configurations                                         |
 | buildConfigFields   | Array  | {}      | false    | An array which contains a set of buildConfigFields configurations                                 |
@@ -246,7 +248,7 @@ flavorizr:
 | compatibleSdkVersion | String | 5.0.5(17)           | false    | Compatible SDK version                      |
 | targetSdkVersion     | String | 5.0.5(17)           | false    | Target SDK version                          |
 | runtimeOS            | String | HarmonyOS           | false    | Runtime OS                                  |
-| bundleName           | String | ohos.applicationId  | false    | Bundle name                                 |
+| bundleName           | String |                     | false    | Bundle name                                 |
 | bundleType           | String | app                 | false    | Bundle type                                 |
 | icon                 | String | $media:startIcon    | false    | Product icon resource                       |
 | label                | String | $string:app_name    | false    | Product label resource                      |
