@@ -1,94 +1,39 @@
+
 {
-  app: {
-    signingConfigs: [
+  "app": {
+    "signingConfigs": [],
+    "products": [
       {
-        name: 'default',
-        type: 'HarmonyOS',
-        material: {
-          certpath: '/Users/tongyulong/.ohos/config/default_ohos_EYkbAIIhJE1t0toUqhJEZvK_hpJtZgganwkthL6EA-k=.cer',
-          keyAlias: 'debugKey',
-          keyPassword: '0000001B6048FDE030B6F85EF82A6FBA4DE701FA02C1E06DA46220C99987AB652C8D56DF2B1DFD998E22F5',
-          profile: '/Users/tongyulong/.ohos/config/default_ohos_EYkbAIIhJE1t0toUqhJEZvK_hpJtZgganwkthL6EA-k=.p7b',
-          signAlg: 'SHA256withECDSA',
-          storeFile: '/Users/tongyulong/.ohos/config/default_ohos_EYkbAIIhJE1t0toUqhJEZvK_hpJtZgganwkthL6EA-k=.p12',
-          storePassword: '0000001BCC7088F8089D46C26C389576936038DAEF4F5748EBCF2567BF04D4A1E1E1CB11DB45DA189E5D70',
-        },
-      },
+        "name": "default",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "5.1.0(18)",
+        "runtimeOS": "HarmonyOS",
+      }
     ],
-    products: [
+    "buildModeSet": [
       {
-        name: 'default',
-        signingConfig: 'default',
-        compatibleSdkVersion: '5.1.0(18)',
-        runtimeOS: 'HarmonyOS',
-        targetSdkVersion: '6.0.2(22)',
+        "name": "debug"
       },
       {
-        name: 'apple_debug',
-        signingConfig: 'default',
-        compatibleSdkVersion: '5.0.5(17)',
-        targetSdkVersion: '5.0.5(17)',
-        runtimeOS: 'HarmonyOS',
-        bundleName: 'com.example.apple.ohos',
-        bundleType: 'app',
-        icon: '$media:startIcon',
-        label: '$string:app_name',
-        buildOption: {
-          strictMode: {
-            caseSensitiveCheck: true,
-            useNormalizedOHMUrl: true,
-          },
-        },
-        versionName: '1.0.2',
+        "name": "profile"
       },
       {
-        name: 'banana_release',
-        signingConfig: 'default',
-        compatibleSdkVersion: '5.0.5(17)',
-        targetSdkVersion: '5.0.5(17)',
-        runtimeOS: 'HarmonyOS',
-        bundleName: 'com.example.banana.ohos',
-        bundleType: 'app',
-        icon: '$media:startIcon',
-        label: '$string:app_name',
-      },
-    ],
-    buildModeSet: [
-      {
-        name: 'debug',
-      },
-      {
-        name: 'profile',
-      },
-      {
-        name: 'release',
-      },
-    ],
+        "name": "release"
+      }
+    ]
   },
-  modules: [
+  "modules": [
     {
-      name: 'entry',
-      srcPath: './entry',
-      targets: [
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
         {
-          name: 'default',
-          applyToProducts: [
-            'default',
-          ],
-        },
-        {
-          name: 'apple_debug',
-          applyToProducts: [
-            'apple_debug',
-          ],
-        },
-        {
-          name: 'banana_release',
-          applyToProducts: [
-            'banana_release',
-          ],
-        },
-      ],
-    },
-  ],
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
 }

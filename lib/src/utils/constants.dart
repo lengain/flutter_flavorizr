@@ -133,6 +133,21 @@ class K {
 
   static String ohosEntryPath = '$ohosPath/entry';
 
+  static String ohosEntryBuildProfile5Path =
+      '$ohosEntryPath/build-profile5.json5';
+
+  static String ohosEntryBuildProfilePath =
+      '$ohosEntryPath/build-profile.json5';
+
+  static String appEntryBuildProfile5Path = 'entry/build-profile5.json5';
+
+  static String appEntryBuildProfilePath = 'entry/build-profile.json5';
+
+  static String ohosEntryTargetsPath =
+      '$ohosEntryPath/build-profile.generated.json5';
+
+  static String ohosEntryMainPath = '$ohosEntryPath/src/main';
+
   static String ohosResourcesPath = '$ohosEntryPath/src/main/resources';
 
   static String ohosMediaPath = '$ohosResourcesPath/base/media';

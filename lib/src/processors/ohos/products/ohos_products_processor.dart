@@ -209,7 +209,8 @@ class OhosProductsProcessor extends StringProcessor {
       config.ohosFlavors.entries.map((entry) {
         final flavor = entry.value.ohos!;
         final rawProduct = Map<String, dynamic>.from(flavor.product);
-        final productName = (rawProduct.remove('name') ??
+        final productName = (flavor.name ??
+                rawProduct.remove('name') ??
                 rawProduct.remove('productName') ??
                 entry.key)
             .toString();

@@ -11,21 +11,28 @@ flavors:
       applicationId: "com.example.apple"
     ohos:
       applicationId: "com.example.apple.ohos"
+      name: "apple_debug"
       product:
-        name: "apple_debug"
         compatibleSdkVersion: "5.0.5(17)"
         targetSdkVersion: "5.0.5(17)"
         runtimeOS: "HarmonyOS"
         bundleType: "app"
-        icon: "$media:startIcon"
         label: "$string:app_name"
         buildOption:
           strictMode:
             caseSensitiveCheck: true
             useNormalizedOHMUrl: true
-        versionName: "1.0.2"    
-      agconnect:
-        config: ".agconnect/apple/agconnect-services.json"
+        versionName: "1.0.2"
+      target:
+        source:
+          sourceRoots:
+            - "./src/apple_debug"
+          pages:
+            - "pages/Index"
+        resource:
+          directories:
+            - "./src/main/apple_debug/resources"
+            - "./src/main/resources"
     ios:
       bundleId: "com.example.apple"
     macos:
@@ -39,16 +46,12 @@ flavors:
       applicationId: "com.example.banana"
     ohos:
       applicationId: "com.example.banana.ohos"
+      name: "banana_release"
       product:
-        name: "banana_release"
         compatibleSdkVersion: "5.0.5(17)"
         targetSdkVersion: "5.0.5(17)"
         runtimeOS: "HarmonyOS"
-        bundleType: "app"
-        icon: "$media:startIcon"
-        label: "$string:app_name"
-      agconnect:
-        config: ".agconnect/banana/agconnect-services.json"
+        bundleType: "app"  
     ios:
       bundleId: "com.example.banana"
     macos:

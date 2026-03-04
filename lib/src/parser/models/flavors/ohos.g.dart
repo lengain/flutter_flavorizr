@@ -14,15 +14,20 @@ Ohos _$OhosFromJson(Map json) {
       'firebase',
       'icon',
       'applicationId',
+      'name',
+      'target',
       'product',
       'resValues',
       'buildConfigFields',
-      'agconnect',
       'adaptiveIcon'
     ],
   );
   return Ohos(
     applicationId: json['applicationId'] as String,
+    name: json['name'] as String?,
+    target: (json['target'] as Map?)?.map(
+      (k, e) => MapEntry(k as String, e),
+    ),
     product: (Ohos._readProduct(json, 'product') as Map?)?.map(
           (k, e) => MapEntry(k as String, e),
         ) ??
@@ -37,10 +42,6 @@ Ohos _$OhosFromJson(Map json) {
               BuildConfigField.fromJson(Map<String, dynamic>.from(e as Map))),
         ) ??
         {},
-    agconnect: json['agconnect'] == null
-        ? null
-        : AGConnect.fromJson(
-            Map<String, dynamic>.from(json['agconnect'] as Map)),
     generateDummyAssets: json['generateDummyAssets'] as bool? ?? true,
     firebase: json['firebase'] == null
         ? null

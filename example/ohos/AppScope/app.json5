@@ -1,56 +1,10 @@
 {
-  app: {
-    bundleName: 'com.example.example',
-    vendor: 'example',
-    versionCode: 1000000,
-    versionName: '1.0.0',
-    icon: '$media:app_icon',
-    label: '$string:app_name',
-  },
-  flavorizr: {
-    ohosConfig: {
-      schemaVersion: 1,
-      flavors: [
-        {
-          name: 'apple',
-          applicationId: 'com.example.apple.ohos',
-          agconnect: '.agconnect/apple/agconnect-services.json',
-          product: {
-            name: 'apple_debug',
-            compatibleSdkVersion: '5.0.5(17)',
-            targetSdkVersion: '5.0.5(17)',
-            runtimeOS: 'HarmonyOS',
-            bundleType: 'app',
-            icon: '$media:startIcon',
-            label: '$string:app_name',
-            buildOption: {
-              strictMode: {
-                caseSensitiveCheck: true,
-                useNormalizedOHMUrl: true,
-              },
-            },
-            versionName: '1.0.2',
-          },
-          resValues: {},
-          buildConfigFields: {},
-        },
-        {
-          name: 'banana',
-          applicationId: 'com.example.banana.ohos',
-          agconnect: '.agconnect/banana/agconnect-services.json',
-          product: {
-            name: 'banana_release',
-            compatibleSdkVersion: '5.0.5(17)',
-            targetSdkVersion: '5.0.5(17)',
-            runtimeOS: 'HarmonyOS',
-            bundleType: 'app',
-            icon: '$media:startIcon',
-            label: '$string:app_name',
-          },
-          resValues: {},
-          buildConfigFields: {},
-        },
-      ],
-    },
-  },
+  "app": {
+    "bundleName": "com.example.example",
+    "vendor": "example",
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "icon": "$media:app_icon",
+    "label": "$string:app_name"
+  }
 }

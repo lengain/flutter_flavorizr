@@ -11,10 +11,18 @@ flavors:
       applicationId: "com.example.apple"
     ohos:
       applicationId: "com.example.apple.ohos"
+      name: "apple_debug"
       product:
         name: "apple_debug"
-      agconnect:
-        config: ".agconnect/apple/agconnect-services.json"
+      target:
+        source:
+          pages:
+            - "pages/Index"
+          sourceRoots:
+            - "./src/apple_debug"
+        resource:
+          directories:
+            - "./src/main/apple_debug/resources"
 
     ios:
       bundleId: "com.example.apple"

@@ -27,15 +27,12 @@ import 'dart:io';
 
 import 'package:flutter_flavorizr/src/parser/models/flavorizr.dart';
 import 'package:flutter_flavorizr/src/processors/commons/abstract_processor.dart';
-import 'package:flutter_flavorizr/src/processors/commons/dynamic_file_string_processor.dart';
-import 'package:flutter_flavorizr/src/processors/commons/new_file_string_processor.dart';
-import 'package:flutter_flavorizr/src/processors/ohos/config/ohos_config_ast_merge_processor.dart';
-import 'package:flutter_flavorizr/src/processors/ohos/config/ohos_config_processor.dart';
 import 'package:flutter_flavorizr/src/utils/constants.dart';
+import 'package:json5/json5.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 class OhosConfigTargetFileProcessor extends AbstractProcessor<void> {
-  static final candidatePaths = [
+  static final legacyCandidatePaths = [
     K.ohosAppScopePath,
     K.ohosEntryModulePath,
     K.appScopePath,
@@ -49,33 +46,48 @@ class OhosConfigTargetFileProcessor extends AbstractProcessor<void> {
 
   @override
   void execute() {
-    final targetPath = candidatePaths.firstWhere(
-      (path) => File(path).existsSync(),
-      orElse: () => K.ohosFlavorizrPath,
-    );
+    _removeLegacyOhosConfigFromProjectFiles();
+  }
 
-    if (File(targetPath).existsSync()) {
-      DynamicFileStringProcessor(
-        targetPath,
-        OhosConfigAstMergeProcessor(
-          config: config,
-          logger: logger,
-        ),
-        config: config,
-        logger: logger,
-      ).execute();
-      return;
+  void _removeLegacyOhosConfigFromProjectFiles() {
+    for (final path in legacyCandidatePaths) {
+      final file = File(path);
+      if (!file.existsSync()) {
+        continue;
+      }
+      final content = file.readAsStringSync();
+      if (content.trim().isEmpty) {
+        continue;
+      }
+      final dynamic parsed = json5Decode(content);
+      if (parsed is! Map) {
+        continue;
+      }
+      final root = Map<String, dynamic>.from(parsed);
+      if (_removeLegacyOhosConfig(root)) {
+        file.writeAsStringSync(json5Encode(root, space: 2));
+      }
+    }
+  }
+
+  bool _removeLegacyOhosConfig(Map<String, dynamic> root) {
+    final flavorizrNode = root['flavorizr'];
+    if (flavorizrNode is! Map) {
+      return false;
     }
 
-    NewFileStringProcessor(
-      targetPath,
-      OhosConfigProcessor(
-        config: config,
-        logger: logger,
-      ),
-      config: config,
-      logger: logger,
-    ).execute();
+    final flavorizr = Map<String, dynamic>.from(flavorizrNode);
+    final hadOhosConfig = flavorizr.remove('ohosConfig') != null;
+    if (!hadOhosConfig) {
+      return false;
+    }
+
+    if (flavorizr.isEmpty) {
+      root.remove('flavorizr');
+    } else {
+      root['flavorizr'] = flavorizr;
+    }
+    return true;
   }
 
   @override

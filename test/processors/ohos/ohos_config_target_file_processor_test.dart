@@ -45,7 +45,8 @@ void main() {
     flavorizr = parser.parse();
   });
 
-  test('Test OhosConfigTargetFileProcessor chooses highest priority candidate',
+  test(
+      'Test OhosConfigTargetFileProcessor keeps AppScope clean without generated file',
       () {
     final previousCwd = Directory.current;
     final temp =
@@ -58,7 +59,17 @@ void main() {
         ..writeAsStringSync('{ module: { name: "entry" } }');
       File(K.ohosAppScopePath)
         ..createSync(recursive: true)
-        ..writeAsStringSync('{ app: { bundleName: "demo.app" } }');
+        ..writeAsStringSync('''
+{
+  app: { bundleName: "demo.app" },
+  flavorizr: {
+    ohosConfig: {
+      schemaVersion: 1,
+      flavors: [],
+    },
+  },
+}
+''');
 
       OhosConfigTargetFileProcessor(
         config: flavorizr,
@@ -67,10 +78,14 @@ void main() {
 
       expect(
         File(K.ohosAppScopePath).readAsStringSync().contains('ohosConfig'),
-        isTrue,
+        isFalse,
       );
       expect(
-        File(K.ohosEntryModulePath).readAsStringSync().contains('ohosConfig'),
+        File(K.ohosAppScopePath).readAsStringSync().contains('flavorizr'),
+        isFalse,
+      );
+      expect(
+        File(K.ohosFlavorizrPath).existsSync(),
         isFalse,
       );
     } finally {
@@ -79,7 +94,7 @@ void main() {
     }
   });
 
-  test('Test OhosConfigTargetFileProcessor falls back to generated file', () {
+  test('Test OhosConfigTargetFileProcessor does not generate fallback file', () {
     final previousCwd = Directory.current;
     final temp =
         Directory.systemTemp.createTempSync('flavorizr_ohos_config_fallback_');
@@ -92,8 +107,7 @@ void main() {
       ).execute();
 
       final outputFile = File(K.ohosFlavorizrPath);
-      expect(outputFile.existsSync(), isTrue);
-      expect(outputFile.readAsStringSync().contains('"flavors"'), isTrue);
+      expect(outputFile.existsSync(), isFalse);
     } finally {
       Directory.current = previousCwd;
       temp.deleteSync(recursive: true);

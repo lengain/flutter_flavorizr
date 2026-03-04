@@ -28,7 +28,6 @@ import 'package:flutter_flavorizr/src/parser/models/flavors/android/build_config
 import 'package:flutter_flavorizr/src/parser/models/flavors/android/res_value.dart';
 import 'package:flutter_flavorizr/src/parser/models/flavors/commons/os.dart';
 import 'package:flutter_flavorizr/src/parser/models/flavors/google/firebase/firebase.dart';
-import 'package:flutter_flavorizr/src/parser/models/flavors/huawei/agconnect/agconnect.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'ohos.g.dart';
@@ -37,6 +36,12 @@ part 'ohos.g.dart';
 class Ohos extends OS {
   @JsonKey(required: true, disallowNullValue: true)
   final String applicationId;
+
+  @JsonKey(disallowNullValue: true)
+  final String? name;
+
+  @JsonKey(disallowNullValue: true)
+  final Map<String, dynamic>? target;
 
   @JsonKey(
     name: 'product',
@@ -53,17 +58,15 @@ class Ohos extends OS {
   final Map<String, BuildConfigField> buildConfigFields;
 
   @JsonKey(disallowNullValue: true)
-  final AGConnect? agconnect;
-
-  @JsonKey(disallowNullValue: true)
   final AdaptiveIcon? adaptiveIcon;
 
   Ohos({
     required this.applicationId,
+    this.name,
+    this.target,
     this.product = const {},
     this.resValues = const {},
     this.buildConfigFields = const {},
-    this.agconnect,
     super.generateDummyAssets,
     super.firebase,
     super.icon,

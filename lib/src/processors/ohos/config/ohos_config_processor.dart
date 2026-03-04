@@ -47,7 +47,6 @@ class OhosConfigProcessor extends StringProcessor {
         return {
           'name': entry.key,
           'applicationId': flavor.applicationId,
-          'agconnect': flavor.agconnect?.config,
           'product': flavor.product,
           'resValues': flavor.resValues.map(
             (key, value) => MapEntry(

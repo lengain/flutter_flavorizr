@@ -134,6 +134,33 @@ flavors:
     expect(product['label'], r'$string:apple_app_name');
   });
 
+  test('Test OhosProductsProcessor uses ohos name as product name', () {
+    final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      name: "apple_ohos_debug"
+      applicationId: "com.example.apple.ohos"
+      product:
+        compatibleSdkVersion: "6.0.0(20)"
+''');
+
+    final processor = OhosProductsProcessor(
+      config: config,
+      logger: logger,
+    );
+
+    final actual = jsonDecode(processor.execute()) as Map<String, dynamic>;
+    final app = Map<String, dynamic>.from(actual['app'] as Map);
+    final products = (app['products'] as List).cast<Map<String, dynamic>>();
+    final product = Map<String, dynamic>.from(products.single);
+
+    expect(product['name'], 'apple_ohos_debug');
+    expect(product['compatibleSdkVersion'], '6.0.0(20)');
+  });
+
   test('Test OhosProductsProcessor maps arbitrary product fields one-to-one',
       () {
     final config = Flavorizr.parse('''
@@ -228,8 +255,7 @@ flavors:
     expect(bananaProduct.containsKey('buildOption'), isFalse);
   });
 
-  test(
-      'Test OhosProductsProcessor omits empty strictMode/buildOption sections',
+  test('Test OhosProductsProcessor omits empty strictMode/buildOption sections',
       () {
     final config = Flavorizr.parse('''
 flavors:
@@ -454,7 +480,7 @@ flavors:
     }
   });
 
-  test('Test ohos:config auto injects into AppScope app.json5', () async {
+  test('Test ohos:config keeps AppScope app.json5 clean', () async {
     final previousCwd = Directory.current;
     final temp =
         Directory.systemTemp.createTempSync('flavorizr_ohos_config_appscope_');
@@ -490,8 +516,12 @@ flavors:
 
       await Future<void>.delayed(const Duration(milliseconds: 100));
       final content = appScopeFile.readAsStringSync();
-      expect(content.contains('ohosConfig'), isTrue);
-      expect(content.contains('schemaVersion'), isTrue);
+      expect(content.contains('ohosConfig'), isFalse);
+      expect(content.contains('flavorizr'), isFalse);
+      expect(
+        File('${temp.path}/${K.ohosFlavorizrPath}').existsSync(),
+        isFalse,
+      );
     } finally {
       Directory.current = previousCwd;
       temp.deleteSync(recursive: true);
@@ -584,7 +614,54 @@ flavors:
           File('${temp.path}/${K.ohosFlavorizrPath}').existsSync();
 
       expect(generatedProducts, isTrue);
-      expect(generatedConfig, isTrue);
+      expect(generatedConfig, isFalse);
+    } finally {
+      Directory.current = previousCwd;
+      temp.deleteSync(recursive: true);
+    }
+  });
+
+  test(
+      'Test ohos:targets auto invokes ohos:config when missing in instructions',
+      () async {
+    final previousCwd = Directory.current;
+    final temp = Directory.systemTemp
+        .createTempSync('flavorizr_ohos_targets_auto_config_');
+
+    try {
+      Directory.current = temp;
+      File('${temp.path}/${K.ohosEntryBuildProfilePath}')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
+{
+  "apiType": "stageMode"
+}
+''');
+
+      final config = Flavorizr.parse('''
+instructions:
+  - ohos:targets
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      applicationId: "com.example.apple.ohos"
+      name: "apple_debug"
+''');
+
+      Processor(
+        config,
+        force: true,
+        logger: logger,
+      ).execute();
+
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      final content = File('${temp.path}/${K.ohosEntryBuildProfilePath}')
+          .readAsStringSync();
+      final decoded = Map<String, dynamic>.from(json5Decode(content) as Map);
+      expect(decoded.containsKey('targets'), isTrue);
     } finally {
       Directory.current = previousCwd;
       temp.deleteSync(recursive: true);

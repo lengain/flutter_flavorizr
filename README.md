@@ -614,7 +614,7 @@ Future<void> main() async {
 
 ### Huawei AppGallery Connect
 
-In order to flavorize your project and enable AppGallery Connect in your flavor you have to define an agconnect object below each Android or OHOS flavor. Under the agconnect object you must define the config path of the agconnect-services.json.
+In order to flavorize your project and enable AppGallery Connect in your flavor you have to define an agconnect object below each Android flavor. Under the agconnect object you must define the config path of the agconnect-services.json.
 
 As you can see in the example below, we added the path accordingly
 
@@ -628,10 +628,6 @@ flavors:
       applicationId: "com.example.apple"
       agconnect:
         config: ".agconnect/apple/agconnect-services.json"
-    ohos:
-      applicationId: "com.example.apple.ohos"
-      agconnect:
-        config: ".agconnect/apple/agconnect-services.json"
   
     ios:
       bundleId: "com.example.apple"
@@ -642,10 +638,6 @@ flavors:
       
     android:
       applicationId: "com.example.banana"
-      agconnect:
-        config: ".agconnect/banana/agconnect-services.json"
-    ohos:
-      applicationId: "com.example.banana.ohos"
       agconnect:
         config: ".agconnect/banana/agconnect-services.json"
     ios:
