@@ -193,14 +193,12 @@ class OhosProductsProcessor extends StringProcessor {
       config.ohosFlavors.entries.map((entry) {
         final flavor = entry.value.ohos!;
         final rawProduct = Map<String, dynamic>.from(flavor.product);
-        final productName = (flavor.name ??
-                rawProduct.remove('name') ??
-                rawProduct.remove('productName') ??
-                entry.key)
-            .toString();
+        final productName = entry.key;
+        rawProduct.remove('name');
+        rawProduct.remove('productName');
         final explicitSigningConfig = rawProduct.remove('signingConfig');
         final signingConfig = _normalizeSigningConfig(
-          explicitSigningConfig?.toString() ?? (flavor.name ?? productName),
+          explicitSigningConfig?.toString() ?? productName,
         );
         final compatibleSdkVersion =
             (rawProduct.remove('compatibleSdkVersion') ?? '6.0.2(22)')

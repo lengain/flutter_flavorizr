@@ -11,7 +11,6 @@ flavors:
       applicationId: "com.example.apple"
     ohos:
       bundleName: "com.example.apple.ohos"
-      name: "apple_debug"
       product:
         compatibleSdkVersion: "5.1.0(18)"
         targetSdkVersion: "5.1.0(18)"
@@ -49,7 +48,6 @@ flavors:
       applicationId: "com.example.banana"
     ohos:
       bundleName: "com.example.banana.ohos"
-      name: "banana_release"
       product:
         compatibleSdkVersion: "5.1.0(18)"
         runtimeOS: "HarmonyOS"

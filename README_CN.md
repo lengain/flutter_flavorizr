@@ -80,23 +80,25 @@ flavors:
     app:
       name: "Apple App"
     ohos:
-      bundleName: "com.example.apple.ohos" # 可选，建议配置
-      name: "apple_debug"
+      bundleName: "com.example.apple.ohos"
       product:
-        name: "apple_debug"
+        compatibleSdkVersion: "5.1.0(18)"
+        runtimeOS: "HarmonyOS"
+        bundleType: "app"
+        signingConfig: "apple_debug"
       target:
         source:
           sourceRoots:
-            - "./src/apple_debug"
+            - "./src/apple_files"
         resource:
           directories:
             - "./src/main/apple_debug/resources"
             - "./src/main/resources"
 ```
 
-接入建议：
+接入说明：
 
-- `ohos.name` 与 `product.name` 保持一致，便于排查
+- product 和 target 的 `name` 字段由 flavor key（如上例中的 `apple`）自动生成，无需手动指定。这确保了与 `flutter run --flavor apple` 命令中的 flavor 名称始终一致
 - `ohos.target.source/sourceRoots`、`ohos.target.resource/directories` 都是可选
 - 不传 `source/resource` 时不会写默认值
 
@@ -272,7 +274,6 @@ flavors:
 | key                 | type   | default | required | description                                             |
 |:------------------- |:------ |:------- |:-------- |:------------------------------------------------------- |
 | bundleName          | String |         | false    | OHOS 应用包名（Bundle Name）                                  |
-| name                | String |         | false    | flavor 对应 OHOS 名称；会优先用于 product/target 命名               |
 | product             | Object | {}      | false    | 映射到 `app.products[]` 的配置                                |
 | target              | Object |         | false    | 映射到 `entry.targets[]` 的配置；未配置时不生成 `source/resource` 默认值 |
 | resValues           | Array  | {}      | false    | 资源值配置                                                   |
@@ -280,19 +281,20 @@ flavors:
 | generateDummyAssets | bool   | true    | false    | 是否生成占位资源                                                |
 | icon                | String |         | false    | OHOS 图标路径                                               |
 
+> **关于 product/target 命名**：生成的 `product.name` 和 `target.name` 始终取 flavor key（如 `apple`、`banana`），与 `flutter run --flavor` 传入的名称自动保持一致，无需手动指定。
+
 ### `product`（仅 OHOS）
 
-| key                  | type   | default                   | required | description                                               |
-|:-------------------- |:------ |:------------------------- |:-------- |:--------------------------------------------------------- |
-| name                 | String |                           | false    | `app.products[].name`（若 `ohos.name` 存在，会被 `ohos.name` 覆盖） |
-| compatibleSdkVersion | String | 6.0.2(22)                 | false    | 兼容 SDK 版本                                                 |
-| targetSdkVersion     | String |                           | false    | 目标 SDK 版本（仅显式配置时输出）                                       |
-| runtimeOS            | String | HarmonyOS                 | false    | 运行时系统                                                     |
-| bundleName           | String |                           | false    | 包名（仅显式配置时输出）                                              |
-| bundleType           | String |                           | false    | 包类型（仅显式配置时输出）                                             |
-| icon                 | String |                           | false    | 产品图标资源（仅显式配置时输出）                                          |
-| label                | String |                           | false    | 产品名称资源（仅显式配置时输出）                                          |
-| signingConfig        | String | normalize(ohos.name 或产品名) | false    | 签名配置名（自动去除非字母数字字符）                                        |
+| key                  | type   | default               | required | description         |
+|:-------------------- |:------ |:--------------------- |:-------- |:------------------- |
+| compatibleSdkVersion | String | 6.0.2(22)             | false    | 兼容 SDK 版本           |
+| targetSdkVersion     | String |                       | false    | 目标 SDK 版本（仅显式配置时输出） |
+| runtimeOS            | String | HarmonyOS             | false    | 运行时系统               |
+| bundleName           | String |                       | false    | 包名（仅显式配置时输出）        |
+| bundleType           | String |                       | false    | 包类型（仅显式配置时输出）       |
+| icon                 | String |                       | false    | 产品图标资源（仅显式配置时输出）    |
+| label                | String |                       | false    | 产品名称资源（仅显式配置时输出）    |
+| signingConfig        | String | normalize(flavor key) | false    | 签名配置名（自动去除非字母数字字符）  |
 
 ## 使用方式
 
@@ -339,6 +341,30 @@ flutter run --flavor banana
 ```
 
 当前 Flutter SDK 的已知问题会影响终端直接运行 macOS flavors，通常需在 XCode 里选择 scheme 运行。
+
+### 鸿蒙平台运行
+
+鸿蒙平台运行前需要先完成 OHOS 工程的依赖安装和同步。以 `apple` flavor 为例：
+
+```bash
+# 1. 获取工具目录（$TOOL_HOME 为 DevEco Studio 安装路径）
+echo $TOOL_HOME
+
+# 2. 进入 ohos 目录，安装 ohpm 依赖
+cd ohos
+$TOOL_HOME/tools/ohpm/bin/ohpm install --all --registry https://ohpm.openharmony.cn/ohpm/ --strict_ssl true
+
+# 3. 同步工程（product 名称即 flavor key）
+$TOOL_HOME/tools/node/bin/node $TOOL_HOME/tools/hvigor/bin/hvigorw.js \
+  --sync -p product=apple -p buildMode=debug \
+  --analyze=normal --parallel --incremental --daemon
+
+# 4. 回到项目根目录运行
+cd ..
+flutter run --flavor apple -d <device_id>
+```
+
+> `flutter run --flavor apple` 会自动在 `build-profile.json5` 中匹配 `name: 'apple'` 的 product 进行构建。这也是 product name 必须与 flavor key 一致的原因。
 
 ## 默认处理器集合
 

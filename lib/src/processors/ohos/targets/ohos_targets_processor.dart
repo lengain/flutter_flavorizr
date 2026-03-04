@@ -65,7 +65,7 @@ class OhosTargetsProcessor extends StringProcessor {
       config.ohosFlavors.entries.map((entry) {
         final flavorName = entry.key;
         final ohos = entry.value.ohos!;
-        final name = _resolveTargetName(entry.key, ohos.name, ohos.product);
+        final name = entry.key;
         final target = ohos.target;
 
         if (target == null) {
@@ -237,19 +237,6 @@ class OhosTargetsProcessor extends StringProcessor {
       target,
       excludedKeys: {'source', 'resource'},
     );
-  }
-
-  String _resolveTargetName(
-    String flavorKey,
-    String? ohosName,
-    Map<String, dynamic> product,
-  ) {
-    final rawProduct = Map<String, dynamic>.from(product);
-    return (ohosName ??
-            rawProduct['name'] ??
-            rawProduct['productName'] ??
-            flavorKey)
-        .toString();
   }
 
   @override
