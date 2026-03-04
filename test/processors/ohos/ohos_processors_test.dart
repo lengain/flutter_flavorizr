@@ -70,13 +70,14 @@ void main() {
     expect(products.any((product) => product['name'] == 'apple_debug'), isTrue);
     expect(products.any((product) => product['name'] == 'banana'), isTrue);
     expect(appleProduct['compatibleSdkVersion'], '6.0.2(22)');
-    expect(appleProduct['targetSdkVersion'], '6.0.2(22)');
+    expect(appleProduct.containsKey('targetSdkVersion'), isFalse);
     expect(appleProduct['runtimeOS'], 'HarmonyOS');
-    expect(appleProduct['bundleName'], 'com.example.apple.ohos');
-    expect(appleProduct['bundleType'], 'app');
     expect(appleProduct.containsKey('icon'), isFalse);
     expect(appleProduct.containsKey('label'), isFalse);
-    expect(bananaProduct['bundleName'], 'com.example.banana.ohos');
+    expect(appleProduct.containsKey('bundleName'), isFalse);
+    expect(appleProduct.containsKey('bundleType'), isFalse);
+    expect(bananaProduct.containsKey('bundleName'), isFalse);
+    expect(bananaProduct.containsKey('bundleType'), isFalse);
   });
 
   test('Test OhosProductsProcessor supports custom product fields', () {

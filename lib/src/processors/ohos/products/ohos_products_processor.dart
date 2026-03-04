@@ -205,15 +205,11 @@ class OhosProductsProcessor extends StringProcessor {
         final compatibleSdkVersion =
             (rawProduct.remove('compatibleSdkVersion') ?? '6.0.2(22)')
                 .toString();
-        final targetSdkVersion =
-            (rawProduct.remove('targetSdkVersion') ?? '6.0.2(22)').toString();
+        final targetSdkVersion = rawProduct.remove('targetSdkVersion');
         final runtimeOS =
             (rawProduct.remove('runtimeOS') ?? 'HarmonyOS').toString();
-        final bundleName =
-            (rawProduct.remove('bundleName') ?? flavor.applicationId)
-                .toString();
-        final bundleType =
-            (rawProduct.remove('bundleType') ?? 'app').toString();
+        final bundleName = rawProduct.remove('bundleName');
+        final bundleType = rawProduct.remove('bundleType');
         final icon = rawProduct.remove('icon');
         final label = rawProduct.remove('label');
         final explicitBuildOption = rawProduct.remove('buildOption');
@@ -222,11 +218,17 @@ class OhosProductsProcessor extends StringProcessor {
           'name': productName,
           'signingConfig': signingConfig,
           'compatibleSdkVersion': compatibleSdkVersion,
-          'targetSdkVersion': targetSdkVersion,
           'runtimeOS': runtimeOS,
-          'bundleName': bundleName,
-          'bundleType': bundleType,
         };
+        if (bundleName != null) {
+          product['bundleName'] = bundleName.toString();
+        }
+        if (bundleType != null) {
+          product['bundleType'] = bundleType.toString();
+        }
+        if (targetSdkVersion != null) {
+          product['targetSdkVersion'] = targetSdkVersion.toString();
+        }
         if (icon != null) {
           product['icon'] = icon.toString();
         }
