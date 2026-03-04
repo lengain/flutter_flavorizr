@@ -24,7 +24,9 @@
  */
 
 class K {
-  static String androidAppPath = 'android/app';
+  static String androidPath = 'android';
+
+  static String androidAppPath = '$androidPath/app';
 
   static String androidSrcPath = '$androidAppPath/src';
 

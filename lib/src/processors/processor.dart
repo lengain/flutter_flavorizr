@@ -141,13 +141,21 @@ class Processor extends AbstractProcessor<void> {
       config.instructions ?? defaultInstructionSet,
     )
       ..removeWhere((instruction) =>
-          !config.androidFlavorsAvailable && instruction.startsWith('android'))
+          (!config.androidFlavorsAvailable ||
+              !Directory(K.androidPath).existsSync()) &&
+          instruction.startsWith('android'))
       ..removeWhere((instruction) =>
-          !config.iosFlavorsAvailable && instruction.startsWith('ios'))
+          (!config.iosFlavorsAvailable ||
+              !Directory(K.iOSPath).existsSync()) &&
+          instruction.startsWith('ios'))
       ..removeWhere((instruction) =>
-          !config.macosFlavorsAvailable && instruction.startsWith('macos'))
+          (!config.macosFlavorsAvailable ||
+              !Directory(K.macOSPath).existsSync()) &&
+          instruction.startsWith('macos'))
       ..removeWhere((instruction) =>
-          !config.ohosFlavorsAvailable && instruction.startsWith('ohos'));
+          (!config.ohosFlavorsAvailable ||
+              !Directory(K.ohosPath).existsSync()) &&
+          instruction.startsWith('ohos'));
 
     logger.info('Flavorization process started');
 
