@@ -90,6 +90,10 @@ flavors:
           directories:
             - "./src/main/apple_debug/resources"
             - "./src/main/resources"
+        abilities:
+            - name: "EntryAbility"
+              label: "$string:favorite_app_name"
+              icon: "assets/apple_flavor_icon.png"
 ```
 
 接入说明：
@@ -97,6 +101,30 @@ flavors:
 - product 和 target 的 `name` 字段由 flavor key（如上例中的 `apple`）自动生成，无需手动指定。这确保了与 `flutter run --flavor apple` 命令中的 flavor 名称始终一致
 - `ohos.target.source/sourceRoots`、`ohos.target.resource/directories` 都是可选
 - 不传 `source/resource` 时不会写默认值
+
+多 Product / 多 Target 与工程结构说明可参考华为文档：[自定义多 Target 与 Product](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section82111917125413)。
+
+### 鸿蒙应用展示名与桌面图标（`target.source.abilities`）
+
+鸿蒙侧**桌面显示的应用名称**和**图标**与 Flutter 的 `app.name` 无自动一一对应关系，需在 `ohos.target.source.abilities` 里为 `EntryAbility` 配置：
+
+| 配置项 | 说明 |
+|:------|:-----|
+| **label** | 使用 `"$string:资源名"` 引用 `resources/.../element/string.json` 中的字符串。例如 `"$string:favorite_app_name"` 对应 `string` 数组里 `name` 为 `favorite_app_name` 的条目。Flavorizr 会在各 flavor 资源目录下维护/补全 `string.json`：若对应条目的 `value` 为空，会写入 **flavor key**（如 `apple`）作为占位；你可随后改为与 `app.name` 一致的展示文案。 |
+| **icon** | 填写 **Flutter 工程根目录下**的静态资源路径（如 `assets/apple_flavor_icon.png`）。执行 `ohos:targets` 后：图片会复制到该 flavor 资源目录的 `base/media/`，文件名为 **`{flavorKey}_icon` + 原扩展名**（如 `apple_icon.png`）；`entry/build-profile.json5` 里 `source.abilities` 的 `icon` 会写为 **`"$media:{flavorKey}_icon"`**（无扩展名，与鸿蒙媒体资源引用一致）。 |
+
+完整示例见 [example/flavorizr.yaml](example/flavorizr.yaml) 中 `apple` 的 `ohos.target` 段（含 `label`、`icon` 与 `output`）。
+
+### 鸿蒙 `target` 其他常用字段
+
+与 [多 Target 构建](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section82111917125413) 中的「源码目录」「资源目录」「产物名」概念对应关系如下：
+
+| 字段路径 | 说明 |
+|:--------|:-----|
+| **target.source.sourceRoots** | 该 flavor 额外的 ArkTS 源码根路径列表（相对 `entry` 模块），用于扩展或拆分页面/Ability 源码；目录不存在时会自动创建。 |
+| **target.source.pages** | 页面路径列表（如 `pages/Index`），写入 `entry` 的 `build-profile` 中对应 target 的 `source.pages`。 |
+| **target.output.artifactName** | 构建产物 HAP 的包名/产物标识（如 `apple_debug`），随 target 合并进 `build-profile.json5`。 |
+| **target.resource.directories** | 该 target 使用的资源目录列表。通常第一项为 flavor 独占目录（如 `./src/main/apple_debug/resources`），第二项可为共享主资源 `./src/main/resources`；除主资源目录外会自动创建目录树，并补齐 `base/element`、`base/media` 等子目录。 |
 
 ### 3) 执行命令
 
@@ -271,7 +299,7 @@ flavors:
 |:------------------- |:------ |:------- |:-------- |:------------------------------------------------------- |
 | bundleName          | String |         | false    | OHOS 应用包名（Bundle Name）                                  |
 | product             | Object | {}      | false    | 映射到 `app.products[]` 的配置                                |
-| target              | Object |         | false    | 映射到 `entry.targets[]` 的配置；未配置时不生成 `source/resource` 默认值 |
+| target              | Object |         | false    | 映射到 `entry.targets[]`；可含 `source`（`sourceRoots`、`pages`、`abilities`）、`output`、`resource`。应用名/图标见上文「鸿蒙应用展示名与桌面图标」 |
 | resValues           | Array  | {}      | false    | 资源值配置                                                   |
 | buildConfigFields   | Array  | {}      | false    | 构建常量                                                    |
 | generateDummyAssets | bool   | true    | false    | 是否生成占位资源                                                |
