@@ -1,39 +1,88 @@
-
 {
-  "app": {
-    "signingConfigs": [],
-    "products": [
+  app: {
+    signingConfigs: [
       {
-        "name": "default",
-        "signingConfig": "default",
-        "compatibleSdkVersion": "5.1.0(18)",
-        "runtimeOS": "HarmonyOS",
+        "name": "appledebug",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/tongyulong/.ohos/config/appledebug_ohos_EYkbAIIhJE1t0toUqhJEZvK_hpJtZgganwkthL6EA-k=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B8FEA6714264F61C4168BAEF0C5A6CEFFCC257D69EF32DD910DA91D971B8CA3B488022F83D8F8ED",
+          "profile": "/Users/tongyulong/.ohos/config/appledebug_ohos_EYkbAIIhJE1t0toUqhJEZvK_hpJtZgganwkthL6EA-k=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/tongyulong/.ohos/config/appledebug_ohos_EYkbAIIhJE1t0toUqhJEZvK_hpJtZgganwkthL6EA-k=.p12",
+          "storePassword": "0000001B912D6B9E29DE2A0A0D80AFB67BDE91CCF852FCBAB44F03B1889354D927EC349E582C4A49F54410"
+        }
       }
     ],
-    "buildModeSet": [
+    products: [
       {
-        "name": "debug"
+        name: 'default',
+        signingConfig: 'default',
+        compatibleSdkVersion: '5.1.0(18)',
+        runtimeOS: 'HarmonyOS',
       },
       {
-        "name": "profile"
+        name: 'apple',
+        signingConfig: 'appledebug',
+        compatibleSdkVersion: '5.1.0(18)',
+        runtimeOS: 'HarmonyOS',
+        bundleName: 'com.example.apple.ohos',
+        bundleType: 'app',
+        targetSdkVersion: '5.1.0(18)',
+        buildOption: {
+          strictMode: {
+            caseSensitiveCheck: true,
+            useNormalizedOHMUrl: true,
+          },
+        },
+        versionName: '1.0.2',
       },
       {
-        "name": "release"
-      }
-    ]
+        name: 'banana',
+        signingConfig: 'banana',
+        compatibleSdkVersion: '5.1.0(18)',
+        runtimeOS: 'HarmonyOS',
+        bundleName: 'com.example.banana.ohos',
+        bundleType: 'app',
+      },
+    ],
+    buildModeSet: [
+      {
+        name: 'debug',
+      },
+      {
+        name: 'profile',
+      },
+      {
+        name: 'release',
+      },
+    ],
   },
-  "modules": [
+  modules: [
     {
-      "name": "entry",
-      "srcPath": "./entry",
-      "targets": [
+      name: 'entry',
+      srcPath: './entry',
+      targets: [
         {
-          "name": "default",
-          "applyToProducts": [
-            "default"
-          ]
-        }
-      ]
-    }
-  ]
+          name: 'default',
+          applyToProducts: [
+            'default',
+          ],
+        },
+        {
+          name: 'apple',
+          applyToProducts: [
+            'apple',
+          ],
+        },
+        {
+          name: 'banana',
+          applyToProducts: [
+            'banana',
+          ],
+        },
+      ],
+    },
+  ],
 }

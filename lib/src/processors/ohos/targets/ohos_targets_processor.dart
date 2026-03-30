@@ -159,8 +159,10 @@ class OhosTargetsProcessor extends StringProcessor {
       );
     }
 
-    final source = <String, dynamic>{};
-    if (sourceNode.containsKey('pages')) {
+    // Copy all fields from sourceNode first; known fields are then normalized.
+    final source = Map<String, dynamic>.from(sourceNode);
+
+    if (source.containsKey('pages')) {
       source['pages'] = _readStringList(
         flavorName: flavorName,
         keyPath: 'target.source.pages',
@@ -168,7 +170,7 @@ class OhosTargetsProcessor extends StringProcessor {
       );
     }
 
-    if (sourceNode.containsKey('sourceRoots')) {
+    if (source.containsKey('sourceRoots')) {
       source['sourceRoots'] = _readStringList(
         flavorName: flavorName,
         keyPath: 'target.source.sourceRoots',

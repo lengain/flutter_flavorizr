@@ -16,7 +16,6 @@ flavors:
         targetSdkVersion: "5.1.0(18)"
         runtimeOS: "HarmonyOS"
         bundleType: "app"
-        label: "$string:app_name"
         buildOption:
           strictMode:
             caseSensitiveCheck: true
@@ -29,6 +28,10 @@ flavors:
             - "./src/apple_files"
           pages:
             - "pages/Index"
+          abilities:
+            - name: "EntryAbility"
+              label: "$string:favorite_app_name"
+              icon: "assets/apple_flavor_icon.png"
         output:
           artifactName: "apple_debug"
         resource:

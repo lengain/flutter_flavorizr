@@ -1,15 +1,43 @@
-
 {
-  "apiType": 'stageMode',
-  "buildOption": {
-  },
-  "targets": [
+  apiType: 'stageMode',
+  buildOption: {},
+  targets: [
     {
-      "name": "default",
-      "runtimeOS": "HarmonyOS"
+      name: 'default',
+      runtimeOS: 'HarmonyOS',
     },
     {
-      "name": "ohosTest",
-    }
-  ]
+      name: 'ohosTest',
+    },
+    {
+      name: 'apple',
+      output: {
+        artifactName: 'apple_debug',
+      },
+      source: {
+        sourceRoots: [
+          './src/apple_files',
+        ],
+        pages: [
+          'pages/Index',
+        ],
+        abilities: [
+          {
+            name: 'EntryAbility',
+            label: '$string:favorite_app_name',
+            "icon": '$media:apple_icon',
+          },
+        ],
+      },
+      resource: {
+        directories: [
+          './src/main/apple_debug/resources',
+          './src/main/resources',
+        ],
+      },
+    },
+    {
+      name: 'banana',
+    },
+  ],
 }
