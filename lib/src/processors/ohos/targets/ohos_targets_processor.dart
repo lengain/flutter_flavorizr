@@ -74,7 +74,7 @@ class OhosTargetsProcessor extends StringProcessor {
 
         final generated = <String, dynamic>{'name': name};
         generated.addAll(_readAdditionalFields(target));
-        final source = _readSource(flavorName, target);
+        final source = _readSource(flavorName, target, flavorName);
         if (source.isNotEmpty) {
           generated['source'] = source;
         }
@@ -148,6 +148,7 @@ class OhosTargetsProcessor extends StringProcessor {
   Map<String, dynamic> _readSource(
     String flavorName,
     Map<String, dynamic> target,
+    String flavorNameForIcon,
   ) {
     final sourceNode = target['source'];
     if (sourceNode == null) {
@@ -178,7 +179,29 @@ class OhosTargetsProcessor extends StringProcessor {
       );
     }
 
+    if (source.containsKey('abilities')) {
+      source['abilities'] = _processAbilities(
+        sourceNode['abilities'],
+        flavorNameForIcon,
+      );
+    }
+
     return source;
+  }
+
+  List<Map<String, dynamic>> _processAbilities(dynamic abilitiesNode, String flavorName) {
+    if (abilitiesNode is! List) return [];
+
+    return abilitiesNode.map((ability) {
+      if (ability is! Map) return Map<String, dynamic>.from(ability as Map);
+
+      final processed = Map<String, dynamic>.from(ability);
+      final icon = processed['icon'];
+      if (icon is String && icon.isNotEmpty) {
+        processed['icon'] = r'$media:' '${flavorName}_icon';
+      }
+      return processed;
+    }).toList();
   }
 
   Map<String, dynamic> _readResource(

@@ -145,7 +145,13 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
           if (!targetDirectory.existsSync()) {
             targetDirectory.createSync(recursive: true);
           }
-          _ensureResourceScaffold(targetDirectory, name, target);
+          final iconPathFromConfig = _extractAbilityIconFromConfig(name);
+          _ensureResourceScaffold(
+            targetDirectory,
+            name,
+            target,
+            iconPathFromConfig,
+          );
         }
       }
     }
@@ -156,10 +162,19 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
   ///
   ///   base/element/, base/media/, en_US/element/, zh_CN/element/
   ///
-  /// For `base/element/` only: if [target] contains an `EntryAbility` with a
+  /// For `base/element/`: if [target] contains an `EntryAbility` with a
   /// `$string:LabelName` label reference, the corresponding entry in the
-  /// `string.json` file is created or its missing `value` is filled with [appName].
-  void _ensureResourceScaffold(Directory directory, String appName, Map<String, dynamic> target) {
+  /// `string.json` file is created or its missing `value` is filled with [flavorName].
+  ///
+  /// For `base/media/`: if [iconPathFromConfig] is set (from the original
+  /// flavorizr YAML), the icon file is copied and renamed to
+  /// `{flavorName}_icon.<ext>`.
+  void _ensureResourceScaffold(
+    Directory directory,
+    String flavorName,
+    Map<String, dynamic> target,
+    String? iconPathFromConfig,
+  ) {
     const requiredPaths = <String>[
       'base/element',
       'base/media',
@@ -168,6 +183,7 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
     ];
 
     final labelName = _extractAbilityLabel(target);
+    final iconPath = iconPathFromConfig;
 
     for (final relativePath in requiredPaths) {
       final subDir = Directory('${directory.path}/$relativePath');
@@ -176,11 +192,50 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
       }
 
       if (relativePath.endsWith('element')) {
-        _upsertStringResource(subDir, labelName, appName);
-      }else if (relativePath.endsWith('media')) {
-        _upsertMediaResource(subDir, labelName, appName);
+        _upsertStringResource(subDir, labelName, flavorName);
+      } else if (relativePath.endsWith('media')) {
+        _upsertMediaResource(subDir, iconPath, flavorName);
       }
     }
+  }
+
+  /// Reads the icon path from the original flavorizr config (before
+  /// [OhosTargetsProcessor] rewrites `icon` to `$media:...`).
+  String? _extractAbilityIconFromConfig(String flavorName) {
+    final flavor = config.ohosFlavors[flavorName];
+    if (flavor == null) return null;
+
+    final ohos = flavor.ohos;
+    if (ohos == null) return null;
+
+    final target = ohos.target;
+    if (target == null) return null;
+
+    List? abilities;
+
+    final source = target['source'];
+    if (source is Map) {
+      abilities = source['abilities'];
+    }
+
+    if (abilities is! List) {
+      final resource = target['resource'];
+      if (resource is Map) {
+        abilities = resource['abilities'];
+      }
+    }
+
+    if (abilities is! List) return null;
+
+    for (final ability in abilities) {
+      if (ability is! Map) continue;
+      if (ability['name'] != 'EntryAbility') continue;
+      final icon = ability['icon'];
+      if (icon is String && icon.isNotEmpty) {
+        return icon;
+      }
+    }
+    return null;
   }
 
   /// Extracts the label name from `label` in [target]'s `abilities` list.
@@ -291,6 +346,44 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
         const JsonEncoder.withIndent('  ').convert(content),
       );
     }
+  }
+
+  /// Copies the icon file from [iconPath] to [mediaDir] and renames it to
+  /// `{flavorName}_icon` with the original extension preserved.
+  ///
+  /// If [iconPath] is `null` or the source file does not exist, nothing is done.
+  void _upsertMediaResource(Directory mediaDir, String? iconPath, String flavorName) {
+    if (iconPath == null) return;
+
+    // Resolve relative paths against the current working directory (project root).
+    final sourceFile = _resolveFile(iconPath);
+    if (!sourceFile.existsSync()) return;
+
+    final extension = _extension(iconPath);
+    final destFileName = '${flavorName}_icon$extension';
+    final destFile = File('${mediaDir.path}/$destFileName');
+
+    if (!destFile.existsSync()) {
+      sourceFile.copySync(destFile.path);
+    }
+  }
+
+  /// Resolves [path] to an absolute path if it is relative, using
+  /// [Directory.current] as the base. Absolute paths are returned unchanged.
+  File _resolveFile(String path) {
+    if (path.startsWith('/')) {
+      return File(path);
+    }
+    final relative = path
+        .replaceAll('\\', '/')
+        .replaceFirst(RegExp(r'^\./'), '');
+    return File('${Directory.current.path}/$relative');
+  }
+
+  String _extension(String path) {
+    final index = path.lastIndexOf('.');
+    if (index < 0 || index == path.length - 1) return '';
+    return path.substring(index);
   }
 
   /// Returns true if [path] refers to the default target's main resources

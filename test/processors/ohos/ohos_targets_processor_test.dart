@@ -190,6 +190,42 @@ flavors:
     );
   });
 
+  test(
+    'Test OhosTargetsProcessor rewrites abilities icon to '
+    r'$media:{flavorName}_icon without file extension',
+    () {
+      final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      bundleName: "com.example.apple.ohos"
+      target:
+        source:
+          abilities:
+            - name: "EntryAbility"
+              icon: "assets/apple_flavor_icon.png"
+''');
+
+      final processor = OhosTargetsProcessor(config: config, logger: logger);
+      final decoded = Map<String, dynamic>.from(
+        json5Decode(processor.execute()) as Map,
+      );
+      final targets = (decoded['targets'] as List)
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList(growable: false);
+      final apple =
+          targets.firstWhere((t) => t['name'] == 'apple');
+      final source = Map<String, dynamic>.from(apple['source'] as Map);
+      final abilities = (source['abilities'] as List)
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList(growable: false);
+      final ability = abilities.single;
+      expect(ability['icon'], r'$media:apple_icon');
+    },
+  );
+
   test('Test OhosTargetsProcessor is idempotent', () {
     final config = Flavorizr.parse('''
 flavors:
@@ -376,10 +412,11 @@ flavors:
         Directory('${flavorResources.path}/zh_CN/element').existsSync(),
         isTrue,
       );
-      expect(
-        File('${flavorResources.path}/base/element/string.json').existsSync(),
-        isFalse,
-      );
+      // Empty string.json is created when no $string: label is configured.
+      final flavorStringJson =
+          File('${flavorResources.path}/base/element/string.json');
+      expect(flavorStringJson.existsSync(), isTrue);
+      expect(flavorStringJson.readAsStringSync(), contains('"string"'));
       expect(mainResourceFile.readAsStringSync(), 'from-main');
     } finally {
       Directory.current = previousCwd;

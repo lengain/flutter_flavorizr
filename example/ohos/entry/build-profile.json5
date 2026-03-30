@@ -25,7 +25,7 @@
           {
             name: 'EntryAbility',
             label: '$string:favorite_app_name',
-            "icon": '$media:apple_icon',
+            icon: '$media:apple_icon',
           },
         ],
       },
