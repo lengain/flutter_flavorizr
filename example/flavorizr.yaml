@@ -40,6 +40,9 @@ flavors:
             - "./src/main/resources"
     ios:
       bundleId: "com.example.apple"
+      icon: "assets/apple_flavor_icon.png"
+      idiom: "iphone"
+      generateDummyAssets: false
     macos:
       bundleId: "com.example.apple"
 

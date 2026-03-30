@@ -41,6 +41,7 @@ class IOSIconsProcessor extends QueueProcessor {
                   IOSIconTargetProcessor(
                     flavor.ios!.icon ?? flavor.app.icon ?? '',
                     flavorName,
+                    idiom: flavor.ios!.idiom,
                     config: config,
                     logger: logger,
                   ),

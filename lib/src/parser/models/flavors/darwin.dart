@@ -39,9 +39,15 @@ class Darwin extends OS with BuildSettingsMixin {
   @JsonKey(disallowNullValue: true, defaultValue: {})
   final Map<String, Variable> variables;
 
+  /// Comma-separated idiom keys (`iphone`, `ipad`, `mac`, `ios-marketing`).
+  /// Used by iOS icon generation; when null or empty, all default sizes apply.
+  @JsonKey(disallowNullValue: true)
+  final String? idiom;
+
   Darwin({
     required this.bundleId,
     this.variables = const {},
+    this.idiom,
     Map<String, dynamic> buildSettings = const {},
     super.generateDummyAssets,
     super.firebase,

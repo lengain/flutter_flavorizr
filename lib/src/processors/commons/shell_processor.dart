@@ -43,6 +43,48 @@ class ShellProcessor extends AbstractProcessor<void> {
   })  : _workingDirectory = workingDirectory,
         super(config, logger: logger);
 
+  static bool _isRubyExecutable(String path) {
+    final normalized = path.replaceAll('\\', '/');
+    final baseName = normalized.split('/').last;
+    return baseName == 'ruby' || baseName == 'ruby.exe';
+  }
+
+  static String _normalizePbxprojShellScript(String input) {
+    // Newer Xcode versions may serialize `shellScript` as an Array with a single
+    // string element:
+    //
+    //   shellScript = (
+    //     "/bin/sh \"...\" build",
+    //   );
+    //
+    // xcodeproj expects `shellScript` to be a String, causing runtime errors
+    // when opening the project. Convert single-element arrays to strings.
+    final re = RegExp(
+      r'shellScript\s*=\s*\(\s*"((?:\\.|[^"])*)",\s*\);',
+      multiLine: true,
+    );
+    return input.replaceAllMapped(re, (m) => 'shellScript = "${m[1]}";');
+  }
+
+  static void _maybeNormalizeXcodeprojForRubyScripts(List<String> args) {
+    // ruby <script.rb> <project.xcodeproj> ...
+    if (args.length < 2) return;
+    final script = args[0];
+    final project = args[1];
+    if (!script.endsWith('.rb')) return;
+    if (!project.endsWith('.xcodeproj')) return;
+
+    final pbxprojPath = '$project/project.pbxproj';
+    final pbxprojFile = File(pbxprojPath);
+    if (!pbxprojFile.existsSync()) return;
+
+    final original = pbxprojFile.readAsStringSync();
+    if (!original.contains('shellScript = (')) return;
+    final normalized = _normalizePbxprojShellScript(original);
+    if (identical(original, normalized) || original == normalized) return;
+    pbxprojFile.writeAsStringSync(normalized);
+  }
+
   @override
   void execute() {
     logger.detail(
@@ -50,9 +92,17 @@ class ShellProcessor extends AbstractProcessor<void> {
       ' with arguments `${_args.join(', ')}` in working directory `$_workingDirectory`',
     );
 
+    // xcodeproj (and other Ruby gems) can emit extremely noisy warnings on some
+    // Ruby installations (e.g. RVM). They don't affect execution, but they
+    // pollute flavorizr logs. Suppress Ruby warnings for Ruby script execution.
+    final effectiveArgs = _isRubyExecutable(_path) ? ['-W0', ..._args] : _args;
+    if (_isRubyExecutable(_path)) {
+      _maybeNormalizeXcodeprojForRubyScripts(_args);
+    }
+
     final result = Process.runSync(
       _path,
-      _args,
+      effectiveArgs,
       workingDirectory: _workingDirectory,
     );
     if (result.exitCode != 0) {

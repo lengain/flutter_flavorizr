@@ -10,7 +10,13 @@ Darwin _$DarwinFromJson(Map json) {
   $checkKeys(
     json,
     requiredKeys: const ['bundleId'],
-    disallowNullValues: const ['firebase', 'icon', 'bundleId', 'variables'],
+    disallowNullValues: const [
+      'firebase',
+      'icon',
+      'bundleId',
+      'variables',
+      'idiom'
+    ],
   );
   return Darwin(
     bundleId: json['bundleId'] as String,
@@ -19,6 +25,7 @@ Darwin _$DarwinFromJson(Map json) {
               Variable.fromJson(Map<String, dynamic>.from(e as Map))),
         ) ??
         {},
+    idiom: json['idiom'] as String?,
     buildSettings: (json['buildSettings'] as Map?)?.map(
           (k, e) => MapEntry(k as String, e),
         ) ??
