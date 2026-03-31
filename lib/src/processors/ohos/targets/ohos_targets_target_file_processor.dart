@@ -184,6 +184,7 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
 
     final labelName = _extractAbilityLabel(target);
     final iconPath = iconPathFromConfig;
+    final appName = _extractAppNameFromTargetName(flavorName) ?? flavorName;
 
     for (final relativePath in requiredPaths) {
       final subDir = Directory('${directory.path}/$relativePath');
@@ -192,11 +193,29 @@ class OhosTargetsTargetFileProcessor extends AbstractProcessor<void> {
       }
 
       if (relativePath.endsWith('element')) {
-        _upsertStringResource(subDir, labelName, flavorName);
+        _upsertStringResource(subDir, labelName, appName);
       } else if (relativePath.endsWith('media')) {
         _upsertMediaResource(subDir, iconPath, flavorName);
       }
     }
+  }
+
+  /// Finds the flavor app name by matching [targetName] against either:
+  /// - flavor key (e.g. `apple`)
+  /// - configured `ohos.name` (e.g. `apple_debug`)
+  ///
+  /// Returns `null` when no matching flavor is found.
+  String? _extractAppNameFromTargetName(String targetName) {
+    for (final entry in config.ohosFlavors.entries) {
+      final flavorKey = entry.key;
+      final flavor = entry.value;
+      final ohosName = flavor.ohos?.name;
+
+      if (flavorKey == targetName || ohosName == targetName) {
+        return flavor.app.name;
+      }
+    }
+    return null;
   }
 
   /// Reads the icon path from the original flavorizr config (before

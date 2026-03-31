@@ -22,7 +22,6 @@
             useNormalizedOHMUrl: true,
           },
         },
-        versionName: '1.0.2',
       },
       {
         name: 'banana',

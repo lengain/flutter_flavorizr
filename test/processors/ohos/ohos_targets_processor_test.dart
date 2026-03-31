@@ -423,4 +423,64 @@ flavors:
       temp.deleteSync(recursive: true);
     }
   });
+
+  test(
+    'Test OhosTargetsTargetFileProcessor writes label value from flavor app.name',
+    () {
+      final previousCwd = Directory.current;
+      final temp = Directory.systemTemp.createTempSync(
+        'flavorizr_ohos_targets_label_app_name_',
+      );
+
+      try {
+        Directory.current = temp;
+        File('${temp.path}/${K.ohosEntryBuildProfilePath}')
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+{
+  "apiType": "stageMode"
+}
+''');
+
+        final config = Flavorizr.parse('''
+flavors:
+  apple:
+    app:
+      name: "Apple App"
+    ohos:
+      bundleName: "com.example.apple.ohos"
+      name: "apple_debug"
+      target:
+        source:
+          abilities:
+            - name: "EntryAbility"
+              label: "\$string:favorite_app_name"
+        resource:
+          directories:
+            - "./src/main/apple_debug/resources"
+''');
+
+        OhosTargetsTargetFileProcessor(config: config, logger: logger).execute();
+
+        final stringJson = File(
+          '${temp.path}/ohos/entry/src/main/apple_debug/resources/base/element/string.json',
+        );
+        expect(stringJson.existsSync(), isTrue);
+
+        final decoded =
+            Map<String, dynamic>.from(json5Decode(stringJson.readAsStringSync()) as Map);
+        final strings = (decoded['string'] as List)
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList(growable: false);
+        final entry = strings.singleWhere(
+          (e) => e['name'] == 'favorite_app_name',
+        );
+
+        expect(entry['value'], 'Apple App');
+      } finally {
+        Directory.current = previousCwd;
+        temp.deleteSync(recursive: true);
+      }
+    },
+  );
 }

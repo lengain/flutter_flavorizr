@@ -20,7 +20,6 @@ flavors:
           strictMode:
             caseSensitiveCheck: true
             useNormalizedOHMUrl: true
-        versionName: "1.0.2"
         signingConfig: "apple_debug"
       target:
         source:
